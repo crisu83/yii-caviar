@@ -54,7 +54,7 @@ yiic generate {generator} {app}:{name} [--key=value] ...
 Generators
 ----------
 
-The following generators will be included in the first release:
+You can choose from the following generators:
 
 - component
 - config
@@ -63,3 +63,5 @@ The following generators will be included in the first release:
 - model
 - view
 - webapp
+
+You can also write your own generator by extending the ```Generator``` class.
