@@ -38,9 +38,10 @@ return array(
   'commandMap' => array(
     'generate' => array(
       'class' => '\crisu83\yii_caviar\Command',
+      'basePath' => '<path-to-project-root>',
     ),
     ...
-  )
+  ),
 );
 ```
 
