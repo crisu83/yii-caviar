@@ -8,27 +8,27 @@
  * file that was distributed with this source code.
  */
 
-namespace console\commands\generate\generators;
+namespace crisu83\yii_caviar\generators;
 
-class LayoutGenerator extends ViewGenerator
+class ConfigGenerator extends ViewGenerator
 {
     /**
      * @var string
      */
-    public $name = 'layout';
+    public $name = 'config';
 
     /**
      * @var string
      */
-    public $description = 'Layout file generator.';
+    public $description = 'Configuration file generator.';
 
     /**
      * @var string
      */
-    public $fileName = 'layout.php';
+    public $fileName = 'config.php';
 
     /**
      * @var string
      */
-    public $filePath = 'views/layout';
+    public $filePath = 'config';
 }

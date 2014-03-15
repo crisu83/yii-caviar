@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace console\commands\generate\generators;
+namespace crisu83\yii_caviar\generators;
 
-use console\commands\generate\exceptions\Exception;
-use console\commands\generate\File;
+use crisu83\yii_caviar\exceptions\Exception;
+use crisu83\yii_caviar\File;
 
 abstract class Generator extends \CModel
 {
@@ -36,7 +36,7 @@ abstract class Generator extends \CModel
     public $templates = array();
 
     /**
-     * @var \console\commands\generate\Command
+     * @var \crisu83\yii_caviar\Command
      */
     public $command;
 

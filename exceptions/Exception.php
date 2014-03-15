@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace console\commands\generate\exceptions;
+namespace crisu83\yii_caviar\exceptions;
 
 class Exception extends \Exception
 {

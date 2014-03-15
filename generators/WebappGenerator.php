@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace console\commands\generate\generators;
+namespace crisu83\yii_caviar\generators;
 
 class WebappGenerator extends Generator
 {
