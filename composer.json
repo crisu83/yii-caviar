@@ -1,0 +1,15 @@
+{
+    "name": "crisu83/yii-caviar",
+    "description": "Next generation code generation for Yii.",
+    "type": "yii-extension",
+    "tags": ["generate", "command", "appetizer", "yii"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Christoffer Niska",
+            "email": "ChristofferNiska@gmail.com"
+        }
+    ],
+    "require": {
+    }
+}
