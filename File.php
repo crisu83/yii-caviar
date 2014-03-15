@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace crisu83\yii_caviar\commands\generate;
+namespace crisu83\yii_caviar;
 
 use crisu83\yii_caviar\exceptions\Exception;
 

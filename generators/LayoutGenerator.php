@@ -25,6 +25,11 @@ class LayoutGenerator extends ViewGenerator
     /**
      * @var string
      */
+    public $defaultFile = 'layout.php';
+
+    /**
+     * @var string
+     */
     public $fileName = 'layout.php';
 
     /**

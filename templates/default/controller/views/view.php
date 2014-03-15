@@ -1,17 +1,17 @@
 <?php
 /**
- * @var string $controllerClassName
- * @var string $cssClassName
+ * @var string $controllerClass
+ * @var string $cssClass
  */
 
 return <<<EOD
 <?php
 
 /**
- * @var $controllerClassName \$this
+ * @var $controllerClass \$this
  */
 ?>
-<div class="$cssClassName">
+<div class="$cssClass">
 
 </div>
 EOD;
