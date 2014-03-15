@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace console\commands\generate;
+namespace crisu83\yii_caviar\commands\generate;
 
-use console\commands\generate\exceptions\Exception;
+use crisu83\yii_caviar\exceptions\Exception;
 
 class File extends \CComponent
 {

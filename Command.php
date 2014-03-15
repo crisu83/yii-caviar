@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace console\commands\generate;
+namespace crisu83\yii_caviar;
 
-use console\commands\generate\exceptions\Exception;
-use console\commands\generate\generators\Generator;
+use crisu83\yii_caviar\exceptions\Exception;
+use crisu83\yii_caviar\generators\Generator;
 
 class Command extends \CConsoleCommand
 {
@@ -35,25 +35,25 @@ class Command extends \CConsoleCommand
      */
     private static $_builtInGenerators = array(
         'webapp' => array(
-            'class' => 'console\commands\generate\generators\WebappGenerator',
+            'class' => 'crisu83\yii_caviar\generators\WebappGenerator',
         ),
         'component' => array(
-            'class' => 'console\commands\generate\generators\ComponentGenerator',
+            'class' => 'crisu83\yii_caviar\generators\ComponentGenerator',
         ),
         'config' => array(
-            'class' => 'console\commands\generate\generators\ConfigGenerator',
+            'class' => 'crisu83\yii_caviar\generators\ConfigGenerator',
         ),
         'controller' => array(
-            'class' => 'console\commands\generate\generators\ControllerGenerator',
+            'class' => 'crisu83\yii_caviar\generators\ControllerGenerator',
         ),
         'layout' => array(
-            'class' => 'console\commands\generate\generators\LayoutGenerator',
+            'class' => 'crisu83\yii_caviar\generators\LayoutGenerator',
         ),
         'model' => array(
-            'class' => 'console\commands\generate\generators\ModelGenerator',
+            'class' => 'crisu83\yii_caviar\generators\ModelGenerator',
         ),
         'view' => array(
-            'class' => 'console\commands\generate\generators\ViewGenerator',
+            'class' => 'crisu83\yii_caviar\generators\ViewGenerator',
         ),
     );
 

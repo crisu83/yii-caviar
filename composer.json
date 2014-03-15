@@ -11,5 +11,10 @@
         }
     ],
     "require": {
+    },
+    "autoload": {
+    	"psr-4": {
+    		"crisu83\\yii_caviar\\": "./"
+    	}
     }
 }
