@@ -30,6 +30,22 @@ to the require section of your `composer.json` file.
 Usage
 -----
 
+Add the a command to your console application configuration:
+
+```
+return array(
+  ...
+  'commandMap' => array(
+    'generate' => array(
+      'class' => '\crisu83\yii_caviar\Command',
+    ),
+    ...
+  )
+);
+```
+
+When that is done you can use it to generate code:
+
 ```
 yiic generate {generator} {app}:{name} [--key=value] ...
 ```
