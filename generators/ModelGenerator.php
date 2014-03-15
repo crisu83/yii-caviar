@@ -27,7 +27,17 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @var string
      */
+    public $defaultFile = 'model.php';
+
+    /**
+     * @var string
+     */
     public $baseClass = '\CActiveRecord';
+
+    /**
+     * @var string
+     */
+    public $namespace = 'models\\records';
 
     /**
      * @var string
@@ -71,17 +81,13 @@ class ModelGenerator extends ComponentGenerator
         $this->className = $this->generateClassName($tableName);
         $this->tableName = $tableName;
 
-        $relations = $this->generateRelations();
-
         $db = $this->getDbConnection();
         $tableSchema = $db->getSchema()->getTable($tableName);
 
-        if (!isset($this->namespace)) {
-            $this->namespace = $appName . '\models';
-        }
+        $this->namespace = "{$appName}\\{$this->namespace}";
 
         $files[] = new File(
-            "{$this->getBasePath()}/{$this->namespaceToPath()}/{$this->className}.php",
+            $this->resolveFilePath(),
             $this->renderFile(
                 $this->resolveTemplateFile(
                     $this->template,

@@ -27,6 +27,11 @@ class ViewGenerator extends Generator
     /**
      * @var string
      */
+    public $defaultFile = 'view.php';
+
+    /**
+     * @var string
+     */
     public $fileName;
 
     /**

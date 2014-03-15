@@ -27,7 +27,17 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
+    public $defaultFile = 'controllers/controller.php';
+
+    /**
+     * @var string
+     */
     public $baseClass = '\CController';
+
+    /**
+     * @var string
+     */
+    public $namespace = 'controllers';
 
     /**
      * @var array
@@ -43,18 +53,14 @@ class ControllerGenerator extends ComponentGenerator
 
         list ($appName, $controllerId) = $this->parseAppAndName($name);
 
-        $this->namespace = $appName . '\controllers';
         $this->className = ucfirst($controllerId) . 'Controller';
+        $this->namespace = "{$appName}\\{$this->namespace}";
         $this->actions = explode(' ', $this->actions);
 
         $files[] = new File(
-            "{$this->getBasePath()}/{$this->namespaceToPath()}/{$this->className}.php",
+            $this->resolveFilePath(),
             $this->renderFile(
-                $this->resolveTemplateFile(
-                    $this->template,
-                    "controllers/$controllerId.php",
-                    "controllers/controller.php"
-                ),
+                $this->findTemplateFile("controllers/$controllerId.php"),
                 array(
                     'className' => $this->className,
                     'baseClass' => $this->baseClass,
@@ -65,6 +71,7 @@ class ControllerGenerator extends ComponentGenerator
         );
 
         foreach ($this->actions as $actionId) {
+            // todo: change to generate these as a sub command.
             $files[] = new File(
                 "{$this->getBasePath()}/$appName/views/$controllerId/$actionId.php",
                 $this->renderFile(
@@ -74,8 +81,8 @@ class ControllerGenerator extends ComponentGenerator
                         "views/view.php"
                     ),
                     array(
-                        'controllerClassName' => $this->namespace . '\\' . $this->className,
-                        'cssClassName' => "$controllerId-controller $actionId-action",
+                        'controllerClass' => "{$this->namespace}\\{$this->className}",
+                        'cssClass' => "$controllerId-controller $actionId-action",
                     )
                 )
             );
@@ -92,6 +99,7 @@ class ControllerGenerator extends ComponentGenerator
         $actions = array();
 
         foreach ($this->actions as $actionId) {
+            // todo: change to generate these as a sub command.
             $actions[] = $this->renderFile(
                 $this->resolveTemplateFile(
                     $this->template,
