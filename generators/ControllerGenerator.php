@@ -27,7 +27,7 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $defaultFile = 'controllers/controller.php';
+    public $defaultFile = 'controller.php';
 
     /**
      * @var string
@@ -40,27 +40,47 @@ class ControllerGenerator extends ComponentGenerator
     public $namespace = 'controllers';
 
     /**
-     * @var array
+     * @var string|array
      */
     public $actions = 'index';
 
     /**
      * @inheritDoc
      */
-    public function generate($name)
+    public function init()
+    {
+        $this->className = ucfirst(strtolower($this->subject)) . 'Controller';
+
+        if (is_string($this->actions)) {
+            $this->actions = explode(' ', $this->actions);
+        }
+
+        $this->initComponent();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rules()
+    {
+        // todo: add validation rules.
+        return array_merge(
+            parent::rules(),
+            array()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function generate()
     {
         $files = array();
-
-        list ($appName, $controllerId) = $this->parseAppAndName($name);
-
-        $this->className = ucfirst($controllerId) . 'Controller';
-        $this->namespace = "{$appName}\\{$this->namespace}";
-        $this->actions = explode(' ', $this->actions);
 
         $files[] = new File(
             $this->resolveFilePath(),
             $this->renderFile(
-                $this->findTemplateFile("controllers/$controllerId.php"),
+                $this->findTemplateFile("{$this->subject}.php"),
                 array(
                     'className' => $this->className,
                     'baseClass' => $this->baseClass,
@@ -71,18 +91,13 @@ class ControllerGenerator extends ComponentGenerator
         );
 
         foreach ($this->actions as $actionId) {
-            // todo: change to generate these as a sub command.
             $files[] = new File(
-                "{$this->getBasePath()}/$appName/views/$controllerId/$actionId.php",
+                "{$this->resolveViewPath()}/$actionId.php",
                 $this->renderFile(
-                    $this->resolveTemplateFile(
-                        $this->template,
-                        "views/$actionId.php",
-                        "views/view.php"
-                    ),
+                    $this->findTemplateFile("views/$actionId.php", "views/view.php"),
                     array(
                         'controllerClass' => "{$this->namespace}\\{$this->className}",
-                        'cssClass' => "$controllerId-controller $actionId-action",
+                        'cssClass' => "{$this->subject}-controller $actionId-action",
                     )
                 )
             );
@@ -99,13 +114,8 @@ class ControllerGenerator extends ComponentGenerator
         $actions = array();
 
         foreach ($this->actions as $actionId) {
-            // todo: change to generate these as a sub command.
             $actions[] = $this->renderFile(
-                $this->resolveTemplateFile(
-                    $this->template,
-                    "/actions/$actionId.php",
-                    "/actions/action.php"
-                ),
+                $this->findTemplateFile("/actions/$actionId.php", "/actions/action.php"),
                 array(
                     'methodName' => 'action' . ucfirst($actionId),
                     'viewName' => $actionId,
@@ -113,6 +123,14 @@ class ControllerGenerator extends ComponentGenerator
             );
         }
 
-        return implode("\n\n", $actions);
+        return implode("\n\n", str_replace("\n", "\n\t", $actions));
+    }
+
+    /**
+     * @return string
+     */
+    protected function resolveViewPath()
+    {
+        return "{$this->getBasePath()}/{$this->app}/views/{$this->subject}";
     }
 }

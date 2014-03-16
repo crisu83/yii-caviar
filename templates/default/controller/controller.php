@@ -3,6 +3,7 @@
  * @var string $namespace
  * @var string $className
  * @var string $baseClass
+ * @var string $actions
  */
 return <<<EOD
 <?php
@@ -11,10 +12,7 @@ namespace $namespace;
 
 class $className extends $baseClass
 {
-    public function actionIndex()
-    {
-        \$this->render('index');
-    }
+    $actions
 }
 EOD;
 

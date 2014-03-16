@@ -40,8 +40,6 @@ class File extends \CComponent
     public $dirMode = 0777;
 
     /**
-     * Constructor.
-     *
      * @param string $path the file path that the new code should be saved to.
      * @param string $content the newly generated code content.
      */
@@ -54,7 +52,6 @@ class File extends \CComponent
 
     /**
      * @return boolean
-     *
      * @throws Exception
      */
     public function save()

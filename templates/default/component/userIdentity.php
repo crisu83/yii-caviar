@@ -17,7 +17,6 @@ class $className extends $baseClass
 {
     /**
      * Authenticates a user.
-     *
      * @return boolean whether authentication succeeds.
      */
     public function authenticate()
@@ -27,6 +26,7 @@ class $className extends $baseClass
             'demo' => 'demo',
             'admin' => 'admin',
         );
+
         if (!isset(\$users[\$this->username])) {
             \$this->errorCode = self::ERROR_USERNAME_INVALID;
         } elseif (\$users[\$this->username] !== \$this->password) {
@@ -34,6 +34,7 @@ class $className extends $baseClass
         } else {
             \$this->errorCode = self::ERROR_NONE;
         }
+
         return !\$this->errorCode;
     }
 }

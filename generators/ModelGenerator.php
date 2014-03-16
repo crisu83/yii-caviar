@@ -37,7 +37,7 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $namespace = 'models\\records';
+    public $namespace = 'models';
 
     /**
      * @var string
@@ -72,28 +72,40 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @inheritDoc
      */
-    public function generate($name)
+    public function init()
+    {
+        $this->className = $this->generateClassName($this->subject); // must be done first
+        $this->tableName = $this->subject;
+
+        $this->initComponent();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rules()
+    {
+        // todo: add validation rules.
+        return array_merge(
+            parent::rules(),
+            array()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function generate()
     {
         $files = array();
 
-        list ($appName, $tableName) = $this->parseAppAndName($name);
-
-        $this->className = $this->generateClassName($tableName);
-        $this->tableName = $tableName;
-
         $db = $this->getDbConnection();
-        $tableSchema = $db->getSchema()->getTable($tableName);
-
-        $this->namespace = "{$appName}\\{$this->namespace}";
+        $tableSchema = $db->getSchema()->getTable($this->tableName);
 
         $files[] = new File(
             $this->resolveFilePath(),
             $this->renderFile(
-                $this->resolveTemplateFile(
-                    $this->template,
-                    "$tableName.php",
-                    "model.php"
-                ),
+                $this->findTemplateFile("{$this->subject}.php"),
                 array(
                     'tableName' => $this->tableName,
                     'className' => $this->className,
@@ -245,7 +257,7 @@ class ModelGenerator extends ComponentGenerator
      */
     protected function getRelations()
     {
-        return isset($relations[$this->className]) ? $relations[$this->className] : array();
+        return isset($this->relations[$this->className]) ? $this->relations[$this->className] : array();
     }
 
     /**
@@ -349,7 +361,6 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @param string $tableName
      * @param bool $addBrackets
-     *
      * @return string
      */
     protected function removePrefix($tableName, $addBrackets = true)
@@ -464,9 +475,7 @@ class ModelGenerator extends ComponentGenerator
     /**
      * Checks if the given table is a "many to many" pivot table.
      * Their PK has 2 fields, and both of those fields are also FK to other separate tables.
-     *
      * @param \CDbTableSchema $table to inspect
-     *
      * @return boolean true if table matches description of helper table.
      */
     protected function isRelationTable($table)
@@ -480,7 +489,6 @@ class ModelGenerator extends ComponentGenerator
 
     /**
      * @param $tableName
-     *
      * @return string
      */
     protected function generateClassName($tableName)
@@ -508,11 +516,9 @@ class ModelGenerator extends ComponentGenerator
 
     /**
      * Generate a name for use as a relation name (inside relations() function in a model).
-     *
      * @param string $tableName
      * @param string $fkName
      * @param boolean $multiple
-     *
      * @return string the relation name
      */
     protected function generateRelationName($tableName, $fkName, $multiple)
