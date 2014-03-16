@@ -54,13 +54,15 @@ return array(
 When that is done you can use it to generate code:
 
 ```
-yiic generate {generator} {app}:{name} [--key=value] ...
+yiic generate {generator} {context}:{subject} [--key=value] ...
 ```
+
+Where generator is the __name__ of the generator, __context__ is the name of your application (e.g. protected) and __subject__ is a name for what you are generating (e.g. foobar).
 
 Generators
 ----------
 
-You can choose from the following generators:
+The following generators are already supported:
 
 - component
 - config
@@ -69,5 +71,10 @@ You can choose from the following generators:
 - model
 - view
 - webapp
+
+And at least the following are planned for the first release:
+
+- action
+- widget
 
 You can also write your own generator by extending the ```Generator``` class.
