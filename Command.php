@@ -10,7 +10,6 @@
 
 namespace crisu83\yii_caviar;
 
-use crisu83\yii_caviar\exceptions\Exception;
 use crisu83\yii_caviar\generators\Generator;
 
 class Command extends \CConsoleCommand
@@ -29,6 +28,16 @@ class Command extends \CConsoleCommand
      * @var string
      */
     public $basePath;
+
+    /**
+     * @var string
+     */
+    public $tempDir = 'tmp';
+
+    /**
+     * @var string
+     */
+    public $defaultAction = 'component';
 
     /**
      * @var array
@@ -53,9 +62,44 @@ class Command extends \CConsoleCommand
             'class' => 'crisu83\yii_caviar\generators\ViewGenerator',
         ),
         'webapp' => array(
-            'class' => 'crisu83\yii_caviar\generators\WebappGenerator',
+            'class' => 'crisu83\yii_caviar\generators\WebAppGenerator',
         ),
     );
+
+    /**
+     * Provides the command description.
+     * @return string the command description.
+     */
+    public function getHelp()
+    {
+        return <<<EOD
+USAGE
+  yiic generate <name> [<context>:]<subject> [<args>]
+
+DESCRIPTION
+  Generates code using the available generators.
+
+EXAMPLES
+  * yiic generate component controller
+    Generates a 'Controller' component under 'protected/components'.
+
+  * yiic generate config main
+    Generates a 'main' configuration under 'protected/main'.
+
+  * yiic generate controller app:site
+    Generates a 'SiteController' under 'app/controllers'.
+
+  * yiic generate layout main
+    Generates a 'main' layout under 'protected/controllers'.
+
+  * yiic generate model api:user
+    Generates an 'User' model 'api/models'.
+
+  * yiic generate webapp app
+    Generates an 'app' web application in the project root.
+
+EOD;
+    }
 
     /**
      *
@@ -83,67 +127,81 @@ class Command extends \CConsoleCommand
      */
     public function run(array $args)
     {
-        if (!isset($args[0])) {
-            $this->usageError("You must specify a generator id.");
+        list($name, $config, $args) = $this->resolveRequest($args);
+
+        if (isset($name)) {
+            $this->usageError("You must specify a generator name.");
         }
 
-        if (!isset($args[1])) {
-            $this->usageError("You must specify a name for what you are generating.");
+        if (!isset($this->generators[$name])) {
+            $this->usageError("Unknown generator '{$name}'.");
         }
 
-        if (!isset($this->generators[$args[0]])) {
-            $this->usageError("Unknown generator '{$args[0]}'.");
+        if (strpos($args[0], ':') !== false) {
+            list ($config['context'], $config['subject']) = explode(':', $args[0]);
+        } else {
+            $config['subject'] = $args[0];
         }
 
-        $this->runGenerator($args);
+        echo "Running generator '$name' ...\n";
+
+        $files = $this->runGenerator($name, $config);
+
+        $this->save($files);
+
+        return 0;
     }
 
     /**
-     * @param array $args
+     * @param string $name
+     * @param array $config
+     * @return File[]
      * @throws Exception
      */
-    public function runGenerator(array $args)
+    public function runGenerator($name, array $config)
     {
-        $config = \CMap::mergeArray($this->generators[$args[0]], $this->parseArguments(array_splice($args, 2)));
-
-        if (strpos($args[1], ':') !== false) {
-            list ($config['app'], $config['name']) = explode(':', $args[1]);
-        } else {
-            $config['name'] = $args[1];
-        }
+        $config = \CMap::mergeArray($this->generators[$name], $config);
 
         /** @var Generator $generator */
         $generator = \Yii::createComponent($config);
         $generator->command = $this;
-        $generator->init();
 
         $this->addTemplates($generator);
+
+        $generator->init();
 
         if (!$generator->validate()) {
             throw new Exception("Generator validation failed.");
         }
 
-        $generator->generate();
+        return $generator->generate();
     }
 
     /**
-     * @param array $args
-     * @return array
+     * @return string
      */
-    protected function parseArguments(array $args)
+    public function resolveTempPath()
     {
-        $config = array();
+        return "{$this->basePath}/{$this->tempDir}";
+    }
 
-        foreach ($args as $arg) {
-            if (strpos($arg, '=') === false) {
-                throw new Exception("Malformed argument '$arg' given.");
-            }
+    /**
+     * @param File[] $files
+     */
+    protected function save(array $files)
+    {
+        echo "Saving temporary files ...\n";
 
-            list ($key, $value) = explode('=', str_replace('"', '', substr($arg, 2)));
-            $config[$key] = $value;
+        foreach ($files as $file) {
+            $file->save();
         }
 
-        return $config;
+        echo "Copying generated files ...\n";
+
+        $fileList = $this->buildFileList($this->resolveTempPath(), $this->basePath);
+        $this->copyFiles($fileList);
+
+        @rmdir($this->resolveTempPath());
     }
 
     /**

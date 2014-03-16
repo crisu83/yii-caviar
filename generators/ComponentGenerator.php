@@ -12,7 +12,7 @@ namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\File;
 
-class ComponentGenerator extends Generator
+class ComponentGenerator extends FileGenerator
 {
     /**
      * @var string
@@ -27,7 +27,7 @@ class ComponentGenerator extends Generator
     /**
      * @var string
      */
-    public $defaultFile = 'component.php';
+    public $defaultView = 'component.php';
 
     /**
      * @var string
@@ -57,9 +57,13 @@ class ComponentGenerator extends Generator
      */
     public function initComponent()
     {
-        $this->namespace = "{$this->app}\\{$this->namespace}";
-        $this->filePath = $this->namespaceToPath();
+        if (!isset($this->className)) {
+            $this->className = ucfirst($this->subject);
+        }
+
+        $this->namespace = "{$this->context}\\{$this->namespace}";
         $this->fileName = "{$this->className}.php";
+        $this->filePath = $this->namespaceToPath();
     }
 
     /**
@@ -83,8 +87,8 @@ class ComponentGenerator extends Generator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->renderFile(
-                $this->findTemplateFile("{$this->subject}.php"),
+            $this->render(
+                $this->resolveViewFile(),
                 array(
                     'className' => $this->className,
                     'baseClass' => $this->baseClass,
@@ -93,7 +97,7 @@ class ComponentGenerator extends Generator
             )
         );
 
-        $this->save($files);
+        return $files;
     }
 
     /**

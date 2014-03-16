@@ -12,7 +12,7 @@ namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\File;
 
-class WebappGenerator extends Generator
+class WebAppGenerator extends Generator
 {
     /**
      * @var string
@@ -27,13 +27,20 @@ class WebappGenerator extends Generator
     /**
      * @var array
      */
-    public $commands = array(
-        // todo: change this to be done through configuration, this is just a temporary fix.
-        'component {app}:controller --className="Controller" --baseClass="\CController"',
-        'component {app}:userIdentity --className="UserIdentity" --baseClass="\CUserIdentity"',
-        'controller {app}:site',
-        'config {app}:main',
-        'layout {app}:main',
+    public $structure = array(
+        'component' => array(
+            array('controller', 'className' => 'Controller', 'baseClass' => '\CController'),
+            array('userIdentity', 'className' => 'UserIdentity', 'baseClass' => '\CUserIdentity'),
+        ),
+        'controller' => array(
+            array('site'),
+        ),
+        'config' => array(
+            array('main'),
+        ),
+        'layout' => array(
+            array('main'),
+        ),
     );
 
     /**
@@ -60,18 +67,20 @@ class WebappGenerator extends Generator
      */
     public function generate()
     {
-        foreach ($this->commands as $command) {
-            $args = explode(' ', $command);
-            $args[1] = str_replace('{app}', $this->subject, $args[1]);
-            $this->command->runGenerator($args);
-        }
-
         $files = array();
+
+        foreach ($this->structure as $name => $items) {
+            foreach ($items as $config) {
+                $config['subject'] = array_shift($config);
+                $config['context'] = $this->subject;
+                $files = array_merge($this->command->runGenerator($name, $config), $files);
+            }
+        }
 
         $files[] = $this->createGitKeepFile('runtime');
         $files[] = $this->createGitKeepFile('web/assets');
 
-        $this->save($files);
+        return $files;
     }
 
     /**

@@ -27,7 +27,7 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $defaultFile = 'controller.php';
+    public $defaultView = 'controller.php';
 
     /**
      * @var string
@@ -79,8 +79,8 @@ class ControllerGenerator extends ComponentGenerator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->renderFile(
-                $this->findTemplateFile("{$this->subject}.php"),
+            $this->render(
+                $this->resolveViewFile(),
                 array(
                     'className' => $this->className,
                     'baseClass' => $this->baseClass,
@@ -91,19 +91,25 @@ class ControllerGenerator extends ComponentGenerator
         );
 
         foreach ($this->actions as $actionId) {
-            $files[] = new File(
-                "{$this->resolveViewPath()}/$actionId.php",
-                $this->renderFile(
-                    $this->findTemplateFile("views/$actionId.php", "views/view.php"),
+            $files = array_merge(
+                $files,
+                $this->command->runGenerator(
+                    'view',
                     array(
-                        'controllerClass' => "{$this->namespace}\\{$this->className}",
-                        'cssClass' => "{$this->subject}-controller $actionId-action",
+                        'subject' => $actionId,
+                        'context' => $this->context,
+                        'viewPath' => "{$this->getViewPath()}/views",
+                        'viewData' => array(
+                            'controllerClass' => "{$this->namespace}\\{$this->className}",
+                            'cssClass' => "{$this->subject}-controller $actionId-action",
+                        ),
+                        'filePath' => "views/{$this->subject}",
                     )
                 )
             );
         }
 
-        $this->save($files);
+        return $files;
     }
 
     /**
@@ -114,8 +120,13 @@ class ControllerGenerator extends ComponentGenerator
         $actions = array();
 
         foreach ($this->actions as $actionId) {
-            $actions[] = $this->renderFile(
-                $this->findTemplateFile("/actions/$actionId.php", "/actions/action.php"),
+            $actions[] = $this->render(
+                $this->resolveViewFile(
+                    array(
+                        "/actions/$actionId.php",
+                        "/actions/action.php",
+                    )
+                ),
                 array(
                     'methodName' => 'action' . ucfirst($actionId),
                     'viewName' => $actionId,
@@ -124,13 +135,5 @@ class ControllerGenerator extends ComponentGenerator
         }
 
         return implode("\n\n", str_replace("\n", "\n{$this->indent()}", $actions));
-    }
-
-    /**
-     * @return string
-     */
-    protected function resolveViewPath()
-    {
-        return "{$this->getBasePath()}/{$this->app}/views/{$this->subject}";
     }
 }
