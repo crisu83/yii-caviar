@@ -10,6 +10,8 @@
 
 namespace crisu83\yii_caviar\generators;
 
+use crisu83\yii_caviar\File;
+
 class WebappGenerator extends Generator
 {
     /**
@@ -26,22 +28,69 @@ class WebappGenerator extends Generator
      * @var array
      */
     public $commands = array(
+        // todo: change this to be done through configuration, this is just a temporary fix.
         'component {app}:controller --className="Controller" --baseClass="\CController"',
-        'component {app}:userIndentity --className="UserIdentity" --baseClass="\CUserIdentity"',
+        'component {app}:userIdentity --className="UserIdentity" --baseClass="\CUserIdentity"',
         'controller {app}:site',
         'config {app}:main',
         'layout {app}:main',
     );
 
     /**
-     * @param string $name
+     * @inheritDoc
      */
-    public function generate($name)
+    public function init()
+    {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rules()
+    {
+        // todo: add validation rules.
+        return array_merge(
+            parent::rules(),
+            array()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function generate()
     {
         foreach ($this->commands as $command) {
             $args = explode(' ', $command);
-            $args[1] = str_replace('{app}', $name, $args[1]);
+            $args[1] = str_replace('{app}', $this->subject, $args[1]);
             $this->command->runGenerator($args);
         }
+
+        $files = array();
+
+        $files[] = $this->createGitKeepFile('runtime');
+        $files[] = $this->createGitKeepFile('web/assets');
+
+        $this->save($files);
+    }
+
+    /**
+     * @param $filePath
+     * @return File
+     */
+    protected function createGitKeepFile($filePath)
+    {
+        return $this->createFile('.gitkeep', $filePath);
+    }
+
+    /**
+     * @param $fileName
+     * @param $filePath
+     * @param string $content
+     * @return File
+     */
+    protected function createFile($fileName, $filePath, $content = '')
+    {
+        return new File("{$this->getBasePath()}/{$this->subject}/$filePath/$fileName", $content);
     }
 }

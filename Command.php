@@ -34,9 +34,6 @@ class Command extends \CConsoleCommand
      * @var array
      */
     private static $_builtInGenerators = array(
-        'webapp' => array(
-            'class' => 'crisu83\yii_caviar\generators\WebappGenerator',
-        ),
         'component' => array(
             'class' => 'crisu83\yii_caviar\generators\ComponentGenerator',
         ),
@@ -55,8 +52,14 @@ class Command extends \CConsoleCommand
         'view' => array(
             'class' => 'crisu83\yii_caviar\generators\ViewGenerator',
         ),
+        'webapp' => array(
+            'class' => 'crisu83\yii_caviar\generators\WebappGenerator',
+        ),
     );
 
+    /**
+     *
+     */
     public function init()
     {
         parent::init();
@@ -76,58 +79,66 @@ class Command extends \CConsoleCommand
 
     /**
      * @param array $args
-     *
      * @return int
      */
     public function run(array $args)
-    {
-        $this->runGenerator($args);
-    }
-
-    /**
-     * @param array $args
-     *
-     * @throws Exception
-     */
-    public function runGenerator(array $args)
     {
         if (!isset($args[0])) {
             $this->usageError("You must specify a generator id.");
         }
 
         if (!isset($args[1])) {
-            $this->usageError("You must specify a name.");
+            $this->usageError("You must specify a name for what you are generating.");
         }
 
         if (!isset($this->generators[$args[0]])) {
             $this->usageError("Unknown generator '{$args[0]}'.");
         }
 
-        $config = \CMap::mergeArray($this->generators[$args[0]], $this->argumentsToConfig(array_splice($args, 2)));
-
-        /** @var Generator $generator */
-        $generator = \Yii::createComponent($config);
-        $generator->command = $this;
-
-        if (!$generator->validate()) {
-            throw new Exception("The validation for the generator failed.");
-        }
-
-        $this->addTemplates($generator);
-
-        $generator->generate($args[1]);
+        $this->runGenerator($args);
     }
 
     /**
      * @param array $args
-     *
+     * @throws Exception
+     */
+    public function runGenerator(array $args)
+    {
+        $config = \CMap::mergeArray($this->generators[$args[0]], $this->parseArguments(array_splice($args, 2)));
+
+        if (strpos($args[1], ':') !== false) {
+            list ($config['app'], $config['name']) = explode(':', $args[1]);
+        } else {
+            $config['name'] = $args[1];
+        }
+
+        /** @var Generator $generator */
+        $generator = \Yii::createComponent($config);
+        $generator->command = $this;
+        $generator->init();
+
+        $this->addTemplates($generator);
+
+        if (!$generator->validate()) {
+            throw new Exception("Generator validation failed.");
+        }
+
+        $generator->generate();
+    }
+
+    /**
+     * @param array $args
      * @return array
      */
-    protected function argumentsToConfig(array $args)
+    protected function parseArguments(array $args)
     {
         $config = array();
 
         foreach ($args as $arg) {
+            if (strpos($arg, '=') === false) {
+                throw new Exception("Malformed argument '$arg' given.");
+            }
+
             list ($key, $value) = explode('=', str_replace('"', '', substr($arg, 2)));
             $config[$key] = $value;
         }
@@ -141,7 +152,8 @@ class Command extends \CConsoleCommand
     protected function addTemplates(Generator $generator)
     {
         foreach ($this->templates as $template => $templatePath) {
-            if (is_dir("$templatePath/{$generator->name}")) {
+            $path = "$templatePath/{$generator->name}";
+            if (file_exists($path) && is_dir($path)) {
                 $generator->templates[$template] = $templatePath;
             }
         }

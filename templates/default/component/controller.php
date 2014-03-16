@@ -24,7 +24,6 @@ class $className extends $baseClass
 
     /**
      * Performs ajax validation on the given model.
-     *
      * @param \CModel \$model the model to validate.
      * @param string \$formId the form id.
      */
@@ -43,7 +42,6 @@ class $className extends $baseClass
 
     /**
      * Triggers a 404 (Page Not Found) error.
-     *
      * @throws \CHttpException when invoked.
      */
     public function pageNotFound()
@@ -53,7 +51,6 @@ class $className extends $baseClass
 
     /**
      * Triggers a 403 (Access Denied) error.
-     *
      * @throws \CHttpException when invoked.
      */
     public function accessDenied()
@@ -63,7 +60,6 @@ class $className extends $baseClass
 
     /**
      * Triggers a 400 (Bad Request) error.
-     *
      * @throws \CHttpException when invoked.
      */
     public function badRequest()

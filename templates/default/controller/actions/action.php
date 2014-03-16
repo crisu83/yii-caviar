@@ -5,8 +5,11 @@
  */
 
 return <<<EOD
-    public function $methodName()
-    {
-        \$this->render('$viewName');
-    }
+/**
+ * Displays the '$viewName' page.
+ */
+public function $methodName()
+{
+    \$this->render('$viewName');
+}
 EOD;

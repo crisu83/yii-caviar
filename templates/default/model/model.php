@@ -30,61 +30,61 @@ namespace $namespace;
 class $className extends $baseClass
 {
     /**
-	 * @return string the associated database table name.
-	 */
-	public function tableName()
-	{
-		return '$tableName';
-	}
+     * @return string the associated database table name.
+     */
+    public function tableName()
+    {
+        return '$tableName';
+    }
 
     /**
-	 * @return array validation rules for model attributes.
-	 */
+     * @return array validation rules for model attributes.
+     */
     public function rules()
     {
-	    return $rules;
-	}
+        return $rules;
+    }
 
     /**
-	 * @return array relational rules.
-	 */
-	public function relations()
-	{
-	    return $relations;
-	}
+     * @return array relational rules.
+     */
+    public function relations()
+    {
+        return $relations;
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label).
-	 */
+    /**
+     * @return array customized attribute labels (name=>label).
+     */
     public function attributeLabels()
     {
-	    return $labels;
-	}
+        return $labels;
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 *
-	 * @return \CActiveDataProvider the data provider that can return the models based on the search conditions.
-	 */
-	public function search()
-	{
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     *
+     * @return \CActiveDataProvider the data provider that can return the models based on the search conditions.
+     */
+    public function search()
+    {
         \$criteria = new \CDbCriteria();
 
         $searchConditions
 
         return new \CActiveDataProvider(\$this, array('criteria' => \$criteria));
-	}
+    }
 
     /**
-	 * Returns the static model of this class.
-	 *
-	 * @param string \$className active record class name.
-	 *
-	 * @return $className the static model class.
-	 */
-	public static function model(\$className = __CLASS__)
-	{
-		return parent::model(\$className);
-	}
+     * Returns the static model of this class.
+     *
+     * @param string \$className active record class name.
+     *
+     * @return $className the static model class.
+     */
+    public static function model(\$className = __CLASS__)
+    {
+        return parent::model(\$className);
+    }
 }
 EOD;

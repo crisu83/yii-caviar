@@ -13,6 +13,7 @@ namespace crisu83\yii_caviar\generators;
 use crisu83\yii_caviar\exceptions\Exception;
 use crisu83\yii_caviar\File;
 
+// todo: clean up the console output, add prompts, style errors etc.
 abstract class Generator extends \CModel
 {
     /**
@@ -28,12 +29,17 @@ abstract class Generator extends \CModel
     /**
      * @var string
      */
-    public $template = 'default';
+    public $subject;
 
     /**
      * @var string
      */
-    public $defaultFile;
+    public $app = 'app';
+
+    /**
+     * @var string
+     */
+    public $template = 'default';
 
     /**
      * @var array
@@ -41,20 +47,36 @@ abstract class Generator extends \CModel
     public $templates = array();
 
     /**
+     * @var string
+     */
+    public $fileName;
+
+    /**
+     * @var string
+     */
+    public $defaultFile = 'default.php';
+
+    /**
+     * @var string
+     */
+    public $filePath;
+
+    /**
      * @var \crisu83\yii_caviar\Command
      */
     public $command;
 
-    // todo: add support for adding sub-commands for e.g. controller actions and views.
     /**
-     * @var array
+     *
      */
-    public $subCommands = array();
+    abstract public function generate();
 
     /**
-     * @param string $name
+     *
      */
-    abstract public function generate($name);
+    public function init()
+    {
+    }
 
     /**
      * @return array
@@ -63,7 +85,8 @@ abstract class Generator extends \CModel
     {
         // todo: add the rest of the rules, including those in other generators.
         return array(
-            array('template', 'required'),
+            array('name, app, template', 'required'),
+            array('description', 'safe'),
         );
     }
 
@@ -79,7 +102,6 @@ abstract class Generator extends \CModel
 
     /**
      * Returns the list of attribute names of the model.
-     *
      * @return array list of attribute names.
      */
     public function attributeNames()
@@ -89,16 +111,19 @@ abstract class Generator extends \CModel
 
     /**
      * @param string $fileName
-     *
+     * @param string|null $defaultFile
      * @return string
-     *
      * @throws Exception
      */
-    protected function findTemplateFile($fileName)
+    protected function findTemplateFile($fileName, $defaultFile = null)
     {
+        if (!isset($defaultFile)) {
+            $defaultFile = $this->defaultFile;
+        }
+
         $basePath = "{$this->resolveTemplatePath($this->template)}/{$this->name}";
 
-        foreach (array($fileName, $this->defaultFile) as $templateFile) {
+        foreach (array($fileName, $defaultFile) as $templateFile) {
             $templatePath = "$basePath/$templateFile";
 
             if (file_exists($templatePath) && is_file($templatePath)) {
@@ -106,38 +131,12 @@ abstract class Generator extends \CModel
             }
         }
 
-        throw new Exception("Unable to find template file '{$fileName}'.");
-    }
-
-    /**
-     * @param string $template
-     * @param string $fileName
-     * @param string $default
-     *
-     * @throws Exception
-     *
-     * @return string
-     */
-    protected function resolveTemplateFile($template, $fileName, $default)
-    {
-        $templatePath = "{$this->resolveTemplatePath($template)}/{$this->name}";
-
-        if (is_file("$templatePath/$fileName")) {
-            return "$templatePath/$fileName";
-        }
-
-        if (is_file("$templatePath/$default")) {
-            return "$templatePath/$default";
-        }
-
-        throw new Exception("Unable to find view file '$fileName' in template path '$templatePath'.");
+        throw new Exception("Unable to find template file '$fileName'.");
     }
 
     /**
      * @param $template
-     *
      * @return string
-     *
      * @throws Exception
      */
     protected function resolveTemplatePath($template)
@@ -150,11 +149,17 @@ abstract class Generator extends \CModel
     }
 
     /**
+     * @return string
+     */
+    protected function resolveFilePath()
+    {
+        return "{$this->getBasePath()}/{$this->filePath}/{$this->fileName}";
+    }
+
+    /**
      * @param string $fileName
      * @param array $_params_
-     *
      * @return string
-     *
      * @throws Exception
      */
     protected function renderFile($fileName, array $_params_ = array())
@@ -186,19 +191,12 @@ EOD;
     }
 
     /**
-     * @param $name
-     *
-     * @return array
-     *
-     * @throws Exception
+     * @param $amount
+     * @return string
      */
-    protected function parseAppAndName($name)
+    protected function indent($amount = 1)
     {
-        if (strpos($name, ':') === false) {
-            throw new Exception("Malformed name '$name'.");
-        }
-
-        return explode(':', $name);
+        return str_repeat(' ', $amount * 4);
     }
 
     /**
@@ -211,9 +209,7 @@ EOD;
 
     /**
      * Converts a word to its plural form.
-     *
      * @param string $name the word to be pluralized
-     *
      * @return string the pluralized word
      */
     protected function pluralize($name)
@@ -250,7 +246,6 @@ EOD;
 
     /**
      * @param $value
-     *
      * @return bool
      */
     protected function isReservedKeyword($value)

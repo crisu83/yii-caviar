@@ -30,32 +30,28 @@ class ViewGenerator extends Generator
     public $defaultFile = 'view.php';
 
     /**
-     * @var string
+     * @inheritDoc
      */
-    public $fileName;
-
-    /**
-     * @var string
-     */
-    public $filePath;
+    public function rules()
+    {
+        // todo: add validation rules.
+        return array_merge(
+            parent::rules(),
+            array()
+        );
+    }
 
     /**
      * @inheritDoc
      */
-    public function generate($name)
+    public function generate()
     {
         $files = array();
 
-        list ($appName, $viewName) = $this->parseAppAndName($name);
-
         $files[] = new File(
-            "{$this->command->basePath}/$appName/{$this->filePath}/$viewName.php",
+            $this->resolveFilePath(),
             $this->renderFile(
-                $this->resolveTemplateFile(
-                    $this->template,
-                    "$viewName.php",
-                    "{$this->name}.php"
-                )
+                $this->findTemplateFile("{$this->subject}.php")
             )
         );
 

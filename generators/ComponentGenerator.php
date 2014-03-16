@@ -47,18 +47,44 @@ class ComponentGenerator extends Generator
     /**
      * @inheritDoc
      */
-    public function generate($name)
+    public function init()
+    {
+        $this->initComponent();
+    }
+
+    /**
+     *
+     */
+    public function initComponent()
+    {
+        $this->namespace = "{$this->app}\\{$this->namespace}";
+        $this->filePath = $this->namespaceToPath();
+        $this->fileName = "{$this->className}.php";
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rules()
+    {
+        // todo: add validation rules.
+        return array_merge(
+            parent::rules(),
+            array()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function generate()
     {
         $files = array();
-
-        list ($appName, $component) = $this->parseAppAndName($name);
-
-        $this->namespace = "$appName\\{$this->namespace}";
 
         $files[] = new File(
             $this->resolveFilePath(),
             $this->renderFile(
-                $this->findTemplateFile("$component.php"),
+                $this->findTemplateFile("{$this->subject}.php"),
                 array(
                     'className' => $this->className,
                     'baseClass' => $this->baseClass,
@@ -68,14 +94,6 @@ class ComponentGenerator extends Generator
         );
 
         $this->save($files);
-    }
-
-    /**
-     * @return string
-     */
-    protected function resolveFilePath()
-    {
-        return "{$this->getBasePath()}/{$this->namespaceToPath()}/{$this->className}.php";
     }
 
     /**
