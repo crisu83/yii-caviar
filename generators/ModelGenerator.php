@@ -239,7 +239,7 @@ class ModelGenerator extends ComponentGenerator
             }
         }
 
-        return implode("\n\t\t", $conditions);
+        return implode("\n{$this->indent(2)}", $conditions);
     }
 
     /**
@@ -249,7 +249,7 @@ class ModelGenerator extends ComponentGenerator
      */
     protected function renderArray(array $array)
     {
-        return "array(\n\t\t\t" . implode(",\n\t\t\t", $array) . "\n\t\t)";
+        return "array(\n{$this->indent(3)}" . implode(",\n{$this->indent(3)}", $array) . "\n{$this->indent(2)})";
     }
 
     /**

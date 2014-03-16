@@ -123,7 +123,7 @@ class ControllerGenerator extends ComponentGenerator
             );
         }
 
-        return implode("\n\n", str_replace("\n", "\n\t", $actions));
+        return implode("\n\n", str_replace("\n", "\n{$this->indent()}", $actions));
     }
 
     /**

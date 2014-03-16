@@ -191,6 +191,15 @@ EOD;
     }
 
     /**
+     * @param $amount
+     * @return string
+     */
+    protected function indent($amount = 1)
+    {
+        return str_repeat(' ', $amount * 4);
+    }
+
+    /**
      * @return string
      */
     protected function getBasePath()
