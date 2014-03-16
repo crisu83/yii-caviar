@@ -12,7 +12,7 @@ namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\File;
 
-class ViewGenerator extends Generator
+class ViewGenerator extends FileGenerator
 {
     /**
      * @var string
@@ -27,7 +27,16 @@ class ViewGenerator extends Generator
     /**
      * @var string
      */
-    public $defaultFile = 'view.php';
+    public $defaultView = 'view.php';
+
+    /**
+     * @inheritDoc
+     */
+    public function init()
+    {
+        $this->fileName = "{$this->subject}.php";
+        $this->filePath = "{$this->context}/$this->filePath";
+    }
 
     /**
      * @inheritDoc
@@ -37,7 +46,9 @@ class ViewGenerator extends Generator
         // todo: add validation rules.
         return array_merge(
             parent::rules(),
-            array()
+            array(
+                array('defaultView', 'required'),
+            )
         );
     }
 
@@ -50,11 +61,15 @@ class ViewGenerator extends Generator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->renderFile(
-                $this->findTemplateFile("{$this->subject}.php")
+            $this->render(
+                $this->resolveViewFile(),
+                array(
+                    "{$this->subject}.php",
+                    $this->defaultView,
+                )
             )
         );
 
-        $this->save($files);
+        return $files;
     }
 }

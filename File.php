@@ -10,8 +10,6 @@
 
 namespace crisu83\yii_caviar;
 
-use crisu83\yii_caviar\exceptions\Exception;
-
 class File extends \CComponent
 {
     /**
@@ -77,6 +75,11 @@ class File extends \CComponent
         @umask($mask);
 
         return true;
+    }
+
+    public function resolveFileName()
+    {
+        return substr($this->path, strrpos($this->path, DIRECTORY_SEPARATOR) + 1);
     }
 
     /**
