@@ -1,10 +1,7 @@
 <?php
 
-return <<<EOD
-<?php
-
 /**
- * @var string \$content
+ * @var string $content
  */
 ?>
 <!DOCTYPE html>
@@ -13,7 +10,6 @@ return <<<EOD
     <title></title>
 </head>
 <body>
-    <?php echo \$content; ?>
+    <?php echo $content; ?>
 </body>
 </html>
-EOD;

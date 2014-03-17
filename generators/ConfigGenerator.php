@@ -25,7 +25,7 @@ class ConfigGenerator extends ViewGenerator
     /**
      * @var string
      */
-    public $defaultView = 'config.php';
+    public $defaultTemplate = 'config.txt';
 
     /**
      * @var string

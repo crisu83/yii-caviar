@@ -27,7 +27,7 @@ class ViewGenerator extends FileGenerator
     /**
      * @var string
      */
-    public $defaultView = 'view.php';
+    public $defaultTemplate = 'view.txt';
 
     /**
      * @inheritDoc
@@ -47,7 +47,6 @@ class ViewGenerator extends FileGenerator
         return array_merge(
             parent::rules(),
             array(
-                array('defaultView', 'required'),
             )
         );
     }
@@ -61,11 +60,11 @@ class ViewGenerator extends FileGenerator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->render(
-                $this->resolveViewFile(),
+            $this->compile(
+                $this->resolveTemplateFile(),
                 array(
-                    "{$this->subject}.php",
-                    $this->defaultView,
+                    "{$this->subject}.txt",
+                    $this->defaultTemplate,
                 )
             )
         );

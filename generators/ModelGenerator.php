@@ -27,7 +27,7 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $defaultView = 'model.php';
+    public $defaultTemplate = 'model.txt';
 
     /**
      * @var string
@@ -104,8 +104,8 @@ class ModelGenerator extends ComponentGenerator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->render(
-                $this->resolveViewFile(),
+            $this->compile(
+                $this->resolveTemplateFile(),
                 array(
                     'tableName' => $this->tableName,
                     'className' => $this->className,

@@ -27,7 +27,7 @@ class ComponentGenerator extends FileGenerator
     /**
      * @var string
      */
-    public $defaultView = 'component.php';
+    public $defaultTemplate = 'component.txt';
 
     /**
      * @var string
@@ -87,8 +87,8 @@ class ComponentGenerator extends FileGenerator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->render(
-                $this->resolveViewFile(),
+            $this->compile(
+                $this->resolveTemplateFile(),
                 array(
                     'className' => $this->className,
                     'baseClass' => $this->baseClass,
