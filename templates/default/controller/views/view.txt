@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * @var $controllerClass $this
+ */
+?>
+<div class="$CSSCLASS$">
+
+</div>

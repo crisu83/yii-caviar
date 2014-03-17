@@ -27,7 +27,7 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $defaultView = 'controller.php';
+    public $defaultTemplate = 'controller.txt';
 
     /**
      * @var string
@@ -79,8 +79,8 @@ class ControllerGenerator extends ComponentGenerator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->render(
-                $this->resolveViewFile(),
+            $this->compile(
+                $this->resolveTemplateFile(),
                 array(
                     'className' => $this->className,
                     'baseClass' => $this->baseClass,
@@ -98,8 +98,8 @@ class ControllerGenerator extends ComponentGenerator
                     array(
                         'subject' => $actionId,
                         'context' => $this->context,
-                        'viewPath' => "{$this->getViewPath()}/views",
-                        'viewData' => array(
+                        'templatePath' => "{$this->getTemplatePath()}/views",
+                        'templateData' => array(
                             'controllerClass' => "{$this->namespace}\\{$this->className}",
                             'cssClass' => "{$this->subject}-controller $actionId-action",
                         ),
@@ -120,11 +120,11 @@ class ControllerGenerator extends ComponentGenerator
         $actions = array();
 
         foreach ($this->actions as $actionId) {
-            $actions[] = $this->render(
-                $this->resolveViewFile(
+            $actions[] = $this->compile(
+                $this->resolveTemplateFile(
                     array(
-                        "/actions/$actionId.php",
-                        "/actions/action.php",
+                        "/actions/$actionId.txt",
+                        "/actions/action.txt",
                     )
                 ),
                 array(

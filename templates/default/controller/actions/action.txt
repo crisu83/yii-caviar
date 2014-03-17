@@ -1,0 +1,7 @@
+/**
+ * Displays the '$VIEWNAME$' page.
+ */
+public function $METHODNAME$()
+{
+    $this->render('$VIEWNAME$');
+}

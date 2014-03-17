@@ -10,9 +10,7 @@
 
 namespace crisu83\yii_caviar\generators;
 
-use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\File;
-use crisu83\yii_caviar\Renderer;
 
 abstract class Generator extends \CModel
 {
@@ -85,65 +83,6 @@ abstract class Generator extends \CModel
     }
 
     /**
-     * @param string $viewFile
-     * @param array $data
-     * @return string
-     */
-    protected function render($viewFile, array $data = array())
-    {
-        $renderer = new Renderer();
-        return $renderer->renderFile($viewFile, array_merge($this->viewData, $data));
-    }
-
-    /**
-     * @return string
-     */
-    protected function getViewPath()
-    {
-        if (!isset($this->viewPath)) {
-            if (!isset($this->templates[$this->template])) {
-                throw new Exception("Unable to find template '{$this->template}'.");
-            }
-
-            $this->viewPath = "{$this->templates[$this->template]}/{$this->name}";
-        }
-
-        return $this->viewPath;
-    }
-
-    /**
-     * @param array $views
-     * @return string
-     * @throws Exception
-     */
-    protected function resolveViewFile(array $views = array())
-    {
-        if (empty($views)) {
-            $views = $this->getDefaultViews();
-        }
-
-        $viewPath = $this->getViewPath();
-
-        foreach ($views as $viewFile) {
-            $filePath = "$viewPath/$viewFile";
-
-            if (file_exists($filePath) && is_file($filePath)) {
-                return $filePath;
-            }
-        }
-
-        throw new Exception("Unable to find view file.");
-    }
-
-    /**
-     * @return array
-     */
-    protected function getDefaultViews()
-    {
-        return array("{$this->subject}.php", $this->defaultView);
-    }
-
-    /**
      * @return string
      */
     protected function resolveFilePath()
@@ -156,7 +95,7 @@ abstract class Generator extends \CModel
      */
     protected function getBasePath()
     {
-        return $this->command->resolveTempPath();
+        return $this->command->getTempPath();
     }
 
     /**

@@ -40,6 +40,11 @@ class Command extends \CConsoleCommand
     public $defaultAction = 'component';
 
     /**
+     * @var string
+     */
+    private $_tempPath;
+
+    /**
      * @var array
      */
     private static $_builtInGenerators = array(
@@ -129,7 +134,7 @@ EOD;
     {
         list($name, $config, $args) = $this->resolveRequest($args);
 
-        if (isset($name)) {
+        if (!isset($name)) {
             $this->usageError("You must specify a generator name.");
         }
 
@@ -143,7 +148,7 @@ EOD;
             $config['subject'] = $args[0];
         }
 
-        echo "Running generator '$name' ...\n";
+        echo "\nRunning generator '$name'.\n";
 
         $files = $this->runGenerator($name, $config);
 
@@ -180,9 +185,14 @@ EOD;
     /**
      * @return string
      */
-    public function resolveTempPath()
+    public function getTempPath()
     {
-        return "{$this->basePath}/{$this->tempDir}";
+        if (!isset($this->_tempPath)) {
+            $hash = md5(microtime(true));
+            $this->_tempPath = "{$this->basePath}/{$this->tempDir}/{$hash}";
+        }
+
+        return $this->_tempPath;
     }
 
     /**
@@ -190,18 +200,27 @@ EOD;
      */
     protected function save(array $files)
     {
-        echo "Saving temporary files ...\n";
+        echo "\nSaving temporary files ... ";
 
         foreach ($files as $file) {
             $file->save();
         }
 
-        echo "Copying generated files ...\n";
+        echo "done\n";
 
-        $fileList = $this->buildFileList($this->resolveTempPath(), $this->basePath);
+        echo "\nCopying generated files ... \n";
+
+
+        $fileList = $this->buildFileList($this->getTempPath(), $this->basePath);
         $this->copyFiles($fileList);
 
-        @rmdir($this->resolveTempPath());
+        echo "done\n";
+
+        echo "\nRemoving temporary files ... ";
+
+        $this->removeDirectory($this->getTempPath());
+
+        echo "done\n\n";
     }
 
     /**
@@ -215,5 +234,31 @@ EOD;
                 $generator->templates[$template] = $templatePath;
             }
         }
+    }
+
+    /**
+     * Flushes a directory recursively.
+     * @param string $path the directory path.
+     */
+    protected function removeDirectory($path)
+    {
+        if (!is_dir($path)) {
+            return;
+        }
+
+        foreach (scandir($path) as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+
+            $entryPath = $path . '/' . $entry;
+
+            if (is_dir($entryPath)) {
+                $this->removeDirectory($entryPath);
+            } else {
+                unlink($entryPath);
+            }
+        }
+        rmdir($path);
     }
 }
