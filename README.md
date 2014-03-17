@@ -41,14 +41,33 @@ to the require section of your `composer.json` file.
 Usage
 -----
 
+Add the a command to your console application configuration:
+
 ```
-yiic generate {generator} {app}:{name} [--key=value] ...
+return array(
+  ...
+  'commandMap' => array(
+    'generate' => array(
+      'class' => '\crisu83\yii_caviar\Command',
+      'basePath' => '<path-to-project-root>',
+    ),
+    ...
+  ),
+);
 ```
+
+When that is done you can use it to generate code:
+
+```
+yiic generate <name> [<context>:]<subject> [--key=value] ...
+```
+
+Where __name__ is the name of the generator, __context__ is the name of your application (e.g. app) and __subject__ is a name for what you are generating.
 
 Generators
 ----------
 
-The following generators will be included in the first release:
+The following generators are already supported:
 
 - component
 - config
@@ -57,3 +76,8 @@ The following generators will be included in the first release:
 - model
 - view
 - webapp
+
+And at least the following generators will be included in the first release:
+
+- action
+- widget
