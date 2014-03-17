@@ -8,11 +8,11 @@ Motivation
 
 You might be wondering why you should use Caviar instead of Gii, so let us take a look at how they differ from each other.
 
-The main disadvantage with Gii is that it is troublesome to write templates for it. Have you ever looked at one of its templates? If you have you know that they are quite hard to read. Compare the following [template in Gii](https://github.com/yiisoft/yii/blob/master/framework/gii/generators/model/templates/default/model.php) to the corresponding [template in Caviar](https://github.com/Crisu83/caviar/blob/master/templates/default/model/model.php). 
+The main disadvantage with Gii is that it is troublesome to write templates for it. Have you ever looked at one of its templates? If you have you know that they are quite hard to read. Compare the following [template in Gii](https://github.com/yiisoft/yii/blob/master/framework/gii/generators/model/templates/default/model.php) to the corresponding [template in Caviar](https://github.com/Crisu83/yii-caviar/blob/master/templates/default/model/model.php). 
 
 Caviar uses HEREDOC syntax for its templates, which does not allow for any logical operations, such as if-clauses or loops, within the actual template. Usually HEREDOC is not considered a good practice mainly because it interrupts the code flow within your classes, but in this case its limitations actually works in our favor.
 
-The reason why Caviar uses HEREDOC syntax is that it uses logic-less templates for separation of concerns. This means that all logic must be placed in the generator and that only strings should be passed to the template. Instead of doing logical operations within the template we do them in the generator when we render content for the template. You can take a look at the model generator for an [example](https://github.com/Crisu83/caviar/blob/master/generators/ModelGenerator.php) on this.
+The reason why Caviar uses HEREDOC syntax is that it uses logic-less templates for separation of concerns. This means that all logic must be placed in the generator and that only strings should be passed to the template. Instead of doing logical operations within the template we do them in the generator when we render content for the template. You can take a look at the model generator for an [example](https://github.com/Crisu83/yii-caviar/blob/master/generators/ModelGenerator.php) on this.
 
 Convinced? Follow the instructions below to install Caviar.
 
@@ -24,13 +24,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist crisu83/caviar "*"
+php composer.phar require --prefer-dist crisu83/yii-caviar "*"
 ```
 
 or add
 
 ```
-"crisu83/caviar": "*"
+"crisu83/yii-caviar": "*"
 ```
 
 to the require section of your `composer.json` file.
