@@ -1,16 +1,18 @@
-yii-caviar
-==========
+Caviar
+======
 
 Next generation code generation for Yii.
 
 Motivation
 ----------
 
-You might be wondering why you should use Caviar instead of Gii so let us take a look at what Caviar does differently. The main disadvantage with Gii is that it is troublesome to write templates for it. Have you ever looked at its templates? If you have you know that they are a big mess. Compare the model generator [template](https://github.com/yiisoft/yii/blob/master/framework/gii/generators/model/templates/default/model.php) in Gii and the corresponding [template](https://github.com/Crisu83/yii-caviar/blob/master/templates/default/model/model.php) in Caviar. 
+You might be wondering why you should use Caviar instead of Gii, so let us take a look at how they differ from each other.
 
-Caviar uses HEREDOC syntax in its templates which does not allow for any logical operations such as if clauses or loops within the template. Usually HEREDOC is not considered a good practice as it interrupts the code flow within your classes, but in this case its limitations actually works in our favor.
+The main disadvantage with Gii is that it is troublesome to write templates for it. Have you ever looked at one of its templates? If you have you know that they are quite hard to read. Compare the following [template in Gii](https://github.com/yiisoft/yii/blob/master/framework/gii/generators/model/templates/default/model.php) to the corresponding [template in Caviar](https://github.com/Crisu83/caviar/blob/master/templates/default/model/model.php). 
 
-This means that you have to contain all your logic within the generator which is a good thing. Gii actually also does this to some degree when it outputs arrays for e.g. model rules. Caviar enforces the [PSR standards](https://github.com/php-fig/fig-standards) so there is no need for alternative code formatting.
+Caviar uses HEREDOC syntax for its templates, which does not allow for any logical operations, such as if-clauses or loops, within the actual template. Usually HEREDOC is not considered a good practice mainly because it interrupts the code flow within your classes, but in this case its limitations actually works in our favor.
+
+The reason why Caviar uses HEREDOC syntax is that it uses logic-less templates for separation of concerns. This means that all logic must be placed in the generator and that only strings should be passed to the template. Instead of doing logical operations within the template we do them in the generator when we render content for the template. You can take a look at the model generator for an [example](https://github.com/Crisu83/caviar/blob/master/generators/ModelGenerator.php) on this.
 
 Convinced? Follow the instructions below to install Caviar.
 
@@ -22,13 +24,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist crisu83/yii-caviar "*"
+php composer.phar require --prefer-dist crisu83/caviar "*"
 ```
 
 or add
 
 ```
-"crisu83/yii-caviar": "*"
+"crisu83/caviar": "*"
 ```
 
 to the require section of your `composer.json` file.
@@ -54,10 +56,10 @@ return array(
 When that is done you can use it to generate code:
 
 ```
-yiic generate {generator} {context}:{subject} [--key=value] ...
+yiic generate <name> [<context>:]<subject> [--key=value] ...
 ```
 
-Where generator is the __name__ of the generator, __context__ is the name of your application (e.g. protected) and __subject__ is a name for what you are generating (e.g. foobar).
+Where __name__ is the name of the generator, __context__ is the name of your application (e.g. app) and __subject__ is a name for what you are generating.
 
 Generators
 ----------
@@ -72,9 +74,7 @@ The following generators are already supported:
 - view
 - webapp
 
-And at least the following are planned for the first release:
+And at least the following generators will be included in the first release:
 
 - action
 - widget
-
-You can also write your own generator by extending the ```Generator``` class.
