@@ -17,17 +17,17 @@ class ViewGenerator extends FileGenerator
     /**
      * @var string
      */
-    public $name = 'view';
+    protected $name = 'view';
 
     /**
      * @var string
      */
-    public $description = 'View file generator.';
+    protected $description = 'Generates view files.';
 
     /**
      * @var string
      */
-    public $defaultTemplate = 'view.txt';
+    protected $defaultTemplate = 'view.txt';
 
     /**
      * @inheritDoc

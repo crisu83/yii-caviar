@@ -5,6 +5,8 @@ namespace crisu83\yii_caviar;
 class Compiler extends \CComponent
 {
     /**
+     * Compiles a template using the given data.
+     *
      * @param string $template
      * @param array $data
      * @return string
@@ -19,7 +21,9 @@ class Compiler extends \CComponent
     }
 
     /**
-     * @return string
+     * Renders the banner that is prepended to each generated file.
+     *
+     * @return string the rendered banner.
      */
     protected function renderBanner()
     {

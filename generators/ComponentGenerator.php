@@ -17,32 +17,32 @@ class ComponentGenerator extends FileGenerator
     /**
      * @var string
      */
-    public $name = 'component';
-
-    /**
-     * @var string
-     */
-    public $description = 'Component class generator.';
-
-    /**
-     * @var string
-     */
-    public $defaultTemplate = 'component.txt';
-
-    /**
-     * @var string
-     */
-    public $className;
-
-    /**
-     * @var string
-     */
     public $baseClass = '\CComponent';
 
     /**
      * @var string
      */
     public $namespace = 'components';
+
+    /**
+     * @var string
+     */
+    protected $name = 'component';
+
+    /**
+     * @var string
+     */
+    protected $description = 'Generates component classes.';
+
+    /**
+     * @var string
+     */
+    protected $className;
+
+    /**
+     * @var string
+     */
+    protected $defaultTemplate = 'component.txt';
 
     /**
      * @inheritDoc
@@ -64,6 +64,21 @@ class ComponentGenerator extends FileGenerator
         $this->namespace = "{$this->context}\\{$this->namespace}";
         $this->fileName = "{$this->className}.php";
         $this->filePath = $this->namespaceToPath();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function attributeLabels()
+    {
+        return array_merge(
+            parent::attributeLabels(),
+            array(
+                'baseClass' => "Name of the class to extend (defaults to {$this->baseClass}).",
+                'namespace' => "Name of the namespace to use (defaults to '{$this->namespace}').",
+                'subject' => "Name of the component that will be generated.",
+            )
+        );
     }
 
     /**

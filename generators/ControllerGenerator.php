@@ -17,21 +17,6 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $name = 'controller';
-
-    /**
-     * @var string
-     */
-    public $description = 'Controller class generator.';
-
-    /**
-     * @var string
-     */
-    public $defaultTemplate = 'controller.txt';
-
-    /**
-     * @var string
-     */
     public $baseClass = '\CController';
 
     /**
@@ -45,15 +30,26 @@ class ControllerGenerator extends ComponentGenerator
     public $actions = 'index';
 
     /**
+     * @var string
+     */
+    protected $name = 'controller';
+
+    /**
+     * @var string
+     */
+    protected $description = 'Generates controller classes.';
+
+    /**
+     * @var string
+     */
+    protected $defaultTemplate = 'controller.txt';
+
+    /**
      * @inheritDoc
      */
     public function init()
     {
         $this->className = ucfirst(strtolower($this->subject)) . 'Controller';
-
-        if (is_string($this->actions)) {
-            $this->actions = explode(' ', $this->actions);
-        }
 
         $this->initComponent();
     }
@@ -73,9 +69,27 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @inheritDoc
      */
+    public function attributeLabels()
+    {
+        return array_merge(
+            parent::attributeLabels(),
+            array(
+                'actions' => "Space separated actions to generate (defaults to '{$this->actions}').",
+                'subject' => "Name of the controller that will be generated.",
+            )
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function generate()
     {
         $files = array();
+
+        if (is_string($this->actions)) {
+            $this->actions = explode(' ', $this->actions);
+        }
 
         $files[] = new File(
             $this->resolveFilePath(),

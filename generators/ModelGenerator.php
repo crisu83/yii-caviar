@@ -17,21 +17,6 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $name = 'model';
-
-    /**
-     * @var string
-     */
-    public $description = 'Model class generator.';
-
-    /**
-     * @var string
-     */
-    public $defaultTemplate = 'model.txt';
-
-    /**
-     * @var string
-     */
     public $baseClass = '\CActiveRecord';
 
     /**
@@ -50,19 +35,34 @@ class ModelGenerator extends ComponentGenerator
     public $tablePrefix;
 
     /**
+     * @var bool
+     */
+    public $buildRelations = true;
+
+    /**
+     * @var bool
+     */
+    public $commentsAsLabels = true;
+
+    /**
      * @var string
      */
-    public $tableName;
+    protected $name = 'model';
 
     /**
-     * @var bool
+     * @var string
      */
-    public $generateRelations = true;
+    protected $description = 'Generates model classes.';
 
     /**
-     * @var bool
+     * @var string
      */
-    public $generateLabelsFromComments = true;
+    protected $defaultTemplate = 'model.txt';
+
+    /**
+     * @var string
+     */
+    protected $tableName;
 
     /**
      * @var array
@@ -89,6 +89,23 @@ class ModelGenerator extends ComponentGenerator
         return array_merge(
             parent::rules(),
             array()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function attributeLabels()
+    {
+        return array_merge(
+            parent::attributeLabels(),
+            array(
+                'connectionId' => "Name of the database connection to use (defaults to '{$this->connectionId}').",
+                'tablePrefix' => "Prefix for table names (defaults to null).",
+                'buildRelations' => "Whether to generate model relations (defaults to true).",
+                'commentsAsLabels' => "Whether to generate model labels from comments (defaults to true).",
+                'subject' => "Name for the model that will be generated.",
+            )
         );
     }
 
@@ -270,7 +287,7 @@ class ModelGenerator extends ComponentGenerator
         $labels = array();
 
         foreach ($tableSchema->columns as $column) {
-            if ($this->generateLabelsFromComments && $column->comment) {
+            if ($this->commentsAsLabels && $column->comment) {
                 $labels[$column->name] = $column->comment;
             } else {
                 $label = ucwords(
@@ -401,7 +418,7 @@ class ModelGenerator extends ComponentGenerator
      */
     protected function generateRelations()
     {
-        if (!$this->generateRelations) {
+        if (!$this->buildRelations) {
             return array();
         }
 

@@ -15,25 +15,25 @@ class LayoutGenerator extends ViewGenerator
     /**
      * @var string
      */
-    public $name = 'layout';
+    protected $name = 'layout';
 
     /**
      * @var string
      */
-    public $description = 'Layout file generator.';
+    protected $description = 'Generates layout files.';
 
     /**
      * @var string
      */
-    public $defaultTemplate = 'layout.txt';
+    protected $defaultTemplate = 'layout.txt';
 
     /**
      * @var string
      */
-    public $fileName = 'layout.php';
+    protected $fileName = 'layout.php';
 
     /**
      * @var string
      */
-    public $filePath = 'views/layout';
+    protected $filePath = 'views/layout';
 }

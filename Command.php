@@ -15,37 +15,37 @@ use crisu83\yii_caviar\generators\Generator;
 class Command extends \CConsoleCommand
 {
     /**
-     * @var array
+     * @var array global generator configurations.
      */
     public $generators = array();
 
     /**
-     * @var array
+     * @var array list of templates (name => path).
      */
     public $templates = array();
 
     /**
-     * @var string
+     * @var string path to the project root.
      */
     public $basePath;
 
     /**
-     * @var string
+     * @var string name of the temporary directory.
      */
     public $tempDir = 'tmp';
 
     /**
-     * @var string
+     * @var string name of the default action.
      */
-    public $defaultAction = 'component';
+    public $defaultAction = 'help';
 
     /**
-     * @var string
+     * @var string path where the generated files are temporarily stored.
      */
     private $_tempPath;
 
     /**
-     * @var array
+     * @var array list of built in generators.
      */
     private static $_builtInGenerators = array(
         Generator::COMPONENT => array(
@@ -72,78 +72,75 @@ class Command extends \CConsoleCommand
     );
 
     /**
-     * Provides the command description.
-     * @return string the command description.
-     */
-    public function getHelp()
-    {
-        return <<<EOD
-USAGE
-  yiic generate <name> [<context>:]<subject> [<args>]
-
-DESCRIPTION
-  Generates code using the available generators.
-
-EXAMPLES
-  * yiic generate component controller
-    Generates a 'Controller' component under 'protected/components'.
-
-  * yiic generate config main
-    Generates a 'main' configuration under 'protected/main'.
-
-  * yiic generate controller app:site
-    Generates a 'SiteController' under 'app/controllers'.
-
-  * yiic generate layout main
-    Generates a 'main' layout under 'protected/controllers'.
-
-  * yiic generate model api:user
-    Generates an 'User' model 'api/models'.
-
-  * yiic generate webapp app
-    Generates an 'app' web application in the project root.
-
-EOD;
-    }
-
-    /**
-     *
+     * @inheritDoc
      */
     public function init()
     {
         parent::init();
 
-        $this->initGenerators();
         $this->initTemplates();
+        $this->initGenerators();
     }
 
     /**
-     * @param array $args
-     * @return int
+     * @inheritDoc
      */
     public function run(array $args)
     {
-        list($name, $config, $args) = $this->resolveRequest($args);
+        list($action, $options, $args) = $this->resolveRequest($args);
 
-        if (!isset($name)) {
-            $this->usageError("You must specify a generator name.");
+        if ($action === 'help') {
+            $this->renderHelp();
+        } elseif (in_array('--help', $options)) {
+            $this->renderGeneratorHelp($action);
+        } else {
+            $this->runGenerator($action, $options, $args);
         }
 
+        return 0;
+    }
+
+    /**
+     * Displays the command help.
+     */
+    public function renderHelp()
+    {
+        echo "\nGENERATE COMMAND";
+        echo "\n  Generates files using the available generators.\n";
+
+        echo "\nUsage:";
+        echo "\n  generator [context:]subject [--option=value ...]\n";
+
+        echo "\nGenerators:";
+        foreach ($this->generators as $name => $config) {
+            $generator = Generator::create($name, $config);
+
+            $offset = Generator::calculateHelpLabelOffset($name);
+            echo "\n  $name" . str_repeat(' ', $offset) . $generator->getDescription();
+        }
+
+        echo "\n\n";
+    }
+
+    /**
+     * Displays the help for a specific generator.
+     *
+     * @param string $name name of the generator.
+     */
+    public function renderGeneratorHelp($name)
+    {
+        Generator::help($name);
+    }
+
+    public function runGenerator($name, array $config, array $args)
+    {
         if (!isset($args[0])) {
             $this->usageError("You must specify a subject.");
         }
 
-        if (strpos($args[0], ':') !== false) {
-            list ($config['context'], $config['subject']) = explode(':', $args[0]);
-        } else {
-            $config['subject'] = $args[0];
-        }
-
-        echo "\nPreparing generator ... ";
-
-        Generator::setGenerators($this->generators);
-        Generator::setTemplates($this->templates);
-        Generator::setBasePath($this->getTempPath());
+        list ($config['context'], $config['subject']) = strpos($args[0], ':') !== false
+            ? explode(':', $args[0])
+            : array('app', $args[0]);
 
         echo "done\n";
 
@@ -152,12 +149,21 @@ EOD;
         $files = Generator::run($name, $config);
 
         $this->save($files);
-
-        return 0;
     }
 
     /**
-     * @return string
+     * @inheritDoc
+     */
+    public function usageError($message)
+    {
+        echo "\nError: $message\n\n";
+        exit(1);
+    }
+
+    /**
+     * Returns the path for storing the generated files.
+     *
+     * @return string temporary path.
      */
     public function getTempPath()
     {
@@ -170,15 +176,19 @@ EOD;
     }
 
     /**
-     *
+     * Initializes the generators.
      */
     protected function initGenerators()
     {
         $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
+
+        Generator::setGenerators($this->generators);
+        Generator::setTemplates($this->templates);
+        Generator::setBasePath($this->getTempPath());
     }
 
     /**
-     *
+     * Initializes the templates.
      */
     protected function initTemplates()
     {
@@ -190,8 +200,10 @@ EOD;
     }
 
     /**
-     * @param $filePath
-     * @return string
+     * Normalizes the given file path by converting aliases to real paths.
+     *
+     * @param string $filePath file path.
+     * @return string real path.
      */
     protected function normalizePath($filePath)
     {
@@ -203,7 +215,9 @@ EOD;
     }
 
     /**
-     * @param File[] $files
+     * Saves the given files in a temporary folder, copies them to the project root and deletes the temporary folder.
+     *
+     * @param File[] $files list of files to save.
      */
     protected function save(array $files)
     {
@@ -230,8 +244,9 @@ EOD;
     }
 
     /**
-     * Flushes a directory recursively.
-     * @param string $path the directory path.
+     * Removes a specific directory.
+     *
+     * @param string $path full path to the directory to remove.
      */
     protected function removeDirectory($path)
     {
