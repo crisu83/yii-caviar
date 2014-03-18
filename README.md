@@ -80,4 +80,5 @@ The following generators are already supported:
 And at least the following generators will be included in the first release:
 
 - action
+- crud
 - widget

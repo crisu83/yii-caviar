@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of yii-caviar.
+ * This file is part of Caviar.
  *
  * (c) 2014 Christoffer Niska
  *
@@ -93,8 +93,8 @@ class ControllerGenerator extends ComponentGenerator
         foreach ($this->actions as $actionId) {
             $files = array_merge(
                 $files,
-                $this->command->runGenerator(
-                    'view',
+                Generator::run(
+                    Generator::VIEW,
                     array(
                         'subject' => $actionId,
                         'context' => $this->context,
@@ -134,6 +134,6 @@ class ControllerGenerator extends ComponentGenerator
             );
         }
 
-        return implode("\n\n", str_replace("\n", "\n{$this->indent()}", $actions));
+        return implode("\n\n{$this->indent()}", str_replace("\n", "\n{$this->indent()}", $actions));
     }
 }
