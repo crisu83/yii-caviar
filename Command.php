@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of yii-caviar.
+ * This file is part of Caviar.
  *
  * (c) 2014 Christoffer Niska
  *
@@ -48,25 +48,25 @@ class Command extends \CConsoleCommand
      * @var array
      */
     private static $_builtInGenerators = array(
-        'component' => array(
+        Generator::COMPONENT => array(
             'class' => 'crisu83\yii_caviar\generators\ComponentGenerator',
         ),
-        'config' => array(
+        Generator::CONFIG => array(
             'class' => 'crisu83\yii_caviar\generators\ConfigGenerator',
         ),
-        'controller' => array(
+        Generator::CONTROLLER => array(
             'class' => 'crisu83\yii_caviar\generators\ControllerGenerator',
         ),
-        'layout' => array(
+        Generator::LAYOUT => array(
             'class' => 'crisu83\yii_caviar\generators\LayoutGenerator',
         ),
-        'model' => array(
+        Generator::MODEL => array(
             'class' => 'crisu83\yii_caviar\generators\ModelGenerator',
         ),
-        'view' => array(
+        Generator::VIEW => array(
             'class' => 'crisu83\yii_caviar\generators\ViewGenerator',
         ),
-        'webapp' => array(
+        Generator::WEBAPP => array(
             'class' => 'crisu83\yii_caviar\generators\WebAppGenerator',
         ),
     );
@@ -113,17 +113,8 @@ EOD;
     {
         parent::init();
 
-        $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
-
-        foreach ($this->templates as $template => $templatePath) {
-            if (($path = \Yii::getPathOfAlias($templatePath)) !== false) {
-                $templatePath = $path;
-            }
-
-            $this->templates[$template] = $templatePath;
-        }
-
-        $this->templates['default'] = __DIR__ . '/templates/default';
+        $this->initGenerators();
+        $this->initTemplates();
     }
 
     /**
@@ -138,8 +129,8 @@ EOD;
             $this->usageError("You must specify a generator name.");
         }
 
-        if (!isset($this->generators[$name])) {
-            $this->usageError("Unknown generator '{$name}'.");
+        if (!isset($args[0])) {
+            $this->usageError("You must specify a subject.");
         }
 
         if (strpos($args[0], ':') !== false) {
@@ -148,38 +139,21 @@ EOD;
             $config['subject'] = $args[0];
         }
 
+        echo "\nPreparing generator ... ";
+
+        Generator::setGenerators($this->generators);
+        Generator::setTemplates($this->templates);
+        Generator::setBasePath($this->getTempPath());
+
+        echo "done\n";
+
         echo "\nRunning generator '$name'.\n";
 
-        $files = $this->runGenerator($name, $config);
+        $files = Generator::run($name, $config);
 
         $this->save($files);
 
         return 0;
-    }
-
-    /**
-     * @param string $name
-     * @param array $config
-     * @return File[]
-     * @throws Exception
-     */
-    public function runGenerator($name, array $config)
-    {
-        $config = \CMap::mergeArray($this->generators[$name], $config);
-
-        /** @var Generator $generator */
-        $generator = \Yii::createComponent($config);
-        $generator->command = $this;
-
-        $this->addTemplates($generator);
-
-        $generator->init();
-
-        if (!$generator->validate()) {
-            throw new Exception("Generator validation failed.");
-        }
-
-        return $generator->generate();
     }
 
     /**
@@ -193,6 +167,39 @@ EOD;
         }
 
         return $this->_tempPath;
+    }
+
+    /**
+     *
+     */
+    protected function initGenerators()
+    {
+        $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
+    }
+
+    /**
+     *
+     */
+    protected function initTemplates()
+    {
+        foreach ($this->templates as $template => $templatePath) {
+            $this->templates[$template] = $this->normalizePath($templatePath);
+        }
+
+        $this->templates['default'] = __DIR__ . '/templates/default';
+    }
+
+    /**
+     * @param $filePath
+     * @return string
+     */
+    protected function normalizePath($filePath)
+    {
+        if (($path = \Yii::getPathOfAlias($filePath)) !== false) {
+            $filePath = $path;
+        }
+
+        return $filePath;
     }
 
     /**
@@ -210,7 +217,6 @@ EOD;
 
         echo "\nCopying generated files ... \n";
 
-
         $fileList = $this->buildFileList($this->getTempPath(), $this->basePath);
         $this->copyFiles($fileList);
 
@@ -221,19 +227,6 @@ EOD;
         $this->removeDirectory($this->getTempPath());
 
         echo "done\n\n";
-    }
-
-    /**
-     * @param Generator $generator
-     */
-    protected function addTemplates(Generator $generator)
-    {
-        foreach ($this->templates as $template => $templatePath) {
-            $path = "$templatePath/{$generator->name}";
-            if (file_exists($path) && is_dir($path)) {
-                $generator->templates[$template] = $templatePath;
-            }
-        }
     }
 
     /**
@@ -259,6 +252,7 @@ EOD;
                 unlink($entryPath);
             }
         }
+
         rmdir($path);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of yii-caviar.
+ * This file is part of Caviar.
  *
  * (c) 2014 Christoffer Niska
  *

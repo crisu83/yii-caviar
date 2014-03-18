@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of yii-caviar.
+ * This file is part of Caviar.
  *
  * (c) 2014 Christoffer Niska
  *
@@ -50,7 +50,7 @@ class File extends \CComponent
 
     /**
      * @return boolean
-     * @throws Exception
+     * @throws \crisu83\yii_caviar\Exception
      */
     public function save()
     {
@@ -77,6 +77,9 @@ class File extends \CComponent
         return true;
     }
 
+    /**
+     * @return string
+     */
     public function resolveFileName()
     {
         return substr($this->path, strrpos($this->path, DIRECTORY_SEPARATOR) + 1);

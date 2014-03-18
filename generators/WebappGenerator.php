@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of yii-caviar.
+ * This file is part of Caviar.
  *
  * (c) 2014 Christoffer Niska
  *
@@ -73,7 +73,7 @@ class WebAppGenerator extends Generator
             foreach ($items as $config) {
                 $config['subject'] = array_shift($config);
                 $config['context'] = $this->subject;
-                $files = array_merge($this->command->runGenerator($name, $config), $files);
+                $files = array_merge(Generator::run($name, $config), $files);
             }
         }
 
@@ -100,6 +100,6 @@ class WebAppGenerator extends Generator
      */
     protected function createFile($fileName, $filePath, $content = '')
     {
-        return new File("{$this->getBasePath()}/{$this->subject}/$filePath/$fileName", $content);
+        return new File(self::$basePath . "/{$this->subject}/$filePath/$fileName", $content);
     }
 }
