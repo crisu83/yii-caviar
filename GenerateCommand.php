@@ -12,7 +12,7 @@ namespace crisu83\yii_caviar;
 
 use crisu83\yii_caviar\generators\Generator;
 
-class Command extends \CConsoleCommand
+class GenerateCommand extends \CConsoleCommand
 {
     /**
      * @var array global generator configurations.
@@ -30,11 +30,6 @@ class Command extends \CConsoleCommand
     public $basePath;
 
     /**
-     * @var string name of the template to use as default.
-     */
-    public $defaultTemplate = 'default';
-
-    /**
      * @var string name of the temporary directory.
      */
     public $tempDir = 'tmp';
@@ -43,6 +38,16 @@ class Command extends \CConsoleCommand
      * @var string name of the default action.
      */
     public $defaultAction = 'help';
+
+    /**
+     * @var string name of the default template.
+     */
+    public $defaultTemplate = 'default';
+
+    /**
+     * @var string
+     */
+    protected $version = '1.0.0-beta';
 
     /**
      * @var string path where the generated files are temporarily stored.
@@ -110,20 +115,42 @@ class Command extends \CConsoleCommand
      */
     public function renderHelp()
     {
-        echo "\nGENERATE COMMAND";
-        echo "\n  Generates files using the available generators.\n";
+        echo $this->renderVersion();
 
-        echo "\nUsage:";
-        echo "\n  generator [context:]subject [--option=value ...]\n";
+        // Usage
+        echo Line::begin('Usage:', Line::YELLOW)->nl();
+        echo Line::begin()
+            ->indent(2)
+            ->text('generator [context:]subject [options]')->nl(2);
 
-        echo "\nGenerators:";
+        // Options
+        echo Line::begin('Options:', Line::YELLOW)->nl();
+        echo Line::begin()
+            ->indent(2)
+            ->text('--help', Line::MAGENTA)
+            ->to(21)
+            ->text('-h', Line::MAGENTA)
+            ->text('Display this help message.')
+            ->nl(2);
+
+        // Generators
+        echo Line::begin('Available generators:', Line::YELLOW)->nl();
         foreach ($this->generators as $name => $config) {
-            $generator = Generator::create($name, $config);
-
-            echo "\n  " . Generator::padHelpLabel($name) . $generator->getDescription();
+            echo Line::begin()
+                ->indent(2)
+                ->text($name, Line::MAGENTA)
+                ->to(24)
+                ->text(Generator::create($name, $config)->getDescription())
+                ->nl();
         }
+    }
 
-        echo "\n\n";
+    protected function renderVersion()
+    {
+        return Line::begin('Caviar', Line::MAGENTA)
+            ->text('version')
+            ->text($this->version, Line::YELLOW)
+            ->nl(2);
     }
 
     /**
@@ -133,29 +160,9 @@ class Command extends \CConsoleCommand
      */
     public function renderGeneratorHelp($name)
     {
+        echo $this->renderVersion();
+
         Generator::help($name);
-    }
-
-    public function runGenerator($name, array $config, array $args)
-    {
-        if (!isset($args[0])) {
-            $this->usageError("You must specify a subject.");
-        }
-
-        list ($config['context'], $config['subject']) = strpos($args[0], ':') !== false
-            ? explode(':', $args[0])
-            : array('app', $args[0]);
-
-        if (!isset($config['template'])) {
-            $config['template'] = $this->defaultTemplate;
-        }
-
-        echo "\nGENERATE COMMAND";
-        echo "\n  Running '$name' generator.\n";
-
-        $files = Generator::run($name, $config);
-
-        $this->save($files);
     }
 
     /**
@@ -163,7 +170,11 @@ class Command extends \CConsoleCommand
      */
     public function usageError($message)
     {
-        echo "\nError: $message\n\n";
+        echo Line::begin('Error:', Line::RED)->nl();
+        echo Line::begin()
+            ->indent(2)
+            ->text($message)
+            ->nl();
 
         exit(1);
     }
@@ -181,18 +192,6 @@ class Command extends \CConsoleCommand
         }
 
         return $this->_tempPath;
-    }
-
-    /**
-     * Initializes the generators.
-     */
-    protected function initGenerators()
-    {
-        $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
-
-        Generator::setGenerators($this->generators);
-        Generator::setTemplates($this->templates);
-        Generator::setBasePath($this->getTempPath());
     }
 
     /**
@@ -223,32 +222,79 @@ class Command extends \CConsoleCommand
     }
 
     /**
+     * Initializes the generators.
+     */
+    protected function initGenerators()
+    {
+        $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
+
+        Generator::setGenerators($this->generators);
+        Generator::setTemplates($this->templates);
+        Generator::setBasePath($this->getTempPath());
+    }
+
+    /**
+     * Runs a specific generator with the given configuration.
+     *
+     * @param string $name name of the generator.
+     * @param array $config generator configuration.
+     * @param array $args command line arguments.
+     */
+    protected function runGenerator($name, array $config, array $args)
+    {
+        echo $this->renderVersion();
+
+        if (!isset($args[0])) {
+            $this->usageError("You must specify a subject for what you are generating.");
+        }
+
+        list ($config['context'], $config['subject']) = strpos($args[0], ':') !== false
+            ? explode(':', $args[0])
+            : array('app', $args[0]);
+
+        echo Line::begin('Running generator', Line::YELLOW)->nl();
+        echo Line::begin()
+            ->indent(2)
+            ->text("Generating $name '{$args[0]}'.")
+            ->nl(2);
+
+        $generator = Generator::create($name, $config);
+
+        if (property_exists($generator, 'template') && !isset($generator->template)) {
+            $generator->template = $this->defaultTemplate;
+        }
+
+        if (!$generator->validate()) {
+            $generator->renderErrors();
+        }
+
+        $files = $generator->generate();
+
+        $this->save($files);
+    }
+
+    /**
      * Saves the given files in a temporary folder, copies them to the project root and deletes the temporary folder.
      *
      * @param File[] $files list of files to save.
      */
     protected function save(array $files)
     {
-        echo "\nSaving temporary files ... ";
+        echo Line::begin('Saving generated files ...', Line::GREEN)->end();
 
         foreach ($files as $file) {
             $file->save();
         }
 
-        echo "done\n";
-
-        echo "\nCopying generated files ... \n";
+        echo Line::begin()->nl();
+        echo Line::begin('Copying generated files ...', Line::GREEN)->nl();
 
         $fileList = $this->buildFileList($this->getTempPath(), $this->basePath);
         $this->copyFiles($fileList);
 
-        echo "done\n";
-
-        echo "\nRemoving temporary files ... ";
+        echo Line::begin('Removing temporary files ...', Line::GREEN)->nl();
 
         $this->removeDirectory($this->getTempPath());
-
-        echo "done\n\n";
     }
 
     /**
