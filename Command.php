@@ -142,9 +142,8 @@ class Command extends \CConsoleCommand
             ? explode(':', $args[0])
             : array('app', $args[0]);
 
-        echo "done\n";
-
-        echo "\nRunning generator '$name'.\n";
+        echo "\nGENERATE COMMAND";
+        echo "\n  Running '$name' generator.\n";
 
         $files = Generator::run($name, $config);
 
@@ -157,6 +156,7 @@ class Command extends \CConsoleCommand
     public function usageError($message)
     {
         echo "\nError: $message\n\n";
+
         exit(1);
     }
 

@@ -53,10 +53,10 @@ class WebAppGenerator extends Generator
     /**
      * @inheritDoc
      */
-    public function attributeLabels()
+    public function attributeDescriptions()
     {
         return array_merge(
-            parent::attributeLabels(),
+            parent::attributeDescriptions(),
             array(
                 'subject' => "Name of the application to generate.",
             )

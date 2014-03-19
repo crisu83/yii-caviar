@@ -43,7 +43,6 @@ class ViewGenerator extends FileGenerator
      */
     public function rules()
     {
-        // todo: add validation rules.
         return array_merge(
             parent::rules(),
             array(

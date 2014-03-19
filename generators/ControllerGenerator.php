@@ -17,7 +17,7 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $baseClass = '\CController';
+    public $baseClass;
 
     /**
      * @var string
@@ -45,6 +45,11 @@ class ControllerGenerator extends ComponentGenerator
     protected $defaultTemplate = 'controller.txt';
 
     /**
+     * @var string
+     */
+    protected $coreClass = '\CController';
+
+    /**
      * @inheritDoc
      */
     public function init()
@@ -59,20 +64,27 @@ class ControllerGenerator extends ComponentGenerator
      */
     public function rules()
     {
-        // todo: add validation rules.
         return array_merge(
             parent::rules(),
-            array()
+            array(
+                array('actions', 'filter', 'filter' => 'trim'),
+                array(
+                    'actions',
+                    'match',
+                    'pattern' => '/^\w+[\w\s,]*$/',
+                    'message' => '{attribute} should only contain word characters, spaces and commas.'
+                ),
+            )
         );
     }
 
     /**
      * @inheritDoc
      */
-    public function attributeLabels()
+    public function attributeDescriptions()
     {
         return array_merge(
-            parent::attributeLabels(),
+            parent::attributeDescriptions(),
             array(
                 'actions' => "Space separated actions to generate (defaults to '{$this->actions}').",
                 'subject' => "Name of the controller that will be generated.",

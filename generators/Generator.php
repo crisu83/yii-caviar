@@ -79,17 +79,23 @@ abstract class Generator extends \CModel
      */
     public function rules()
     {
-        // todo: add the rest of the rules, including those in other generators.
         return array(
             array('subject', 'required'),
-            array('description, context', 'safe'),
+            array(
+                'subject',
+                'match',
+                'pattern' => '/^[a-zA-Z_]\w*$/',
+                'message' => '{attribute} should only contain word characters.'
+            ),
         );
     }
 
     /**
-     * @inheritDoc
+     * Returns short descriptions for the attributes in this generator.
+     *
+     * @return array attribute descriptions.
      */
-    public function attributeLabels()
+    public function attributeDescriptions()
     {
         return array(
             'subject' => "Name for the item that will be generated.",
@@ -123,14 +129,33 @@ abstract class Generator extends \CModel
         echo "\n  generator [context:]subject [--option=value ...]\n";
 
         $attributes = $this->attributeNames();
-        $labels = $this->attributeLabels();
+        $descriptions = $this->attributeDescriptions();
 
         echo "\nOptions:";
         foreach ($attributes as $name) {
             $offset = $this->calculateHelpLabelOffset($name);
-            echo "\n  " . $name . str_repeat(' ', $offset) . (isset($labels[$name]) ? $labels[$name] : '');
+            echo "\n  " . $name . str_repeat(' ', $offset) . (isset($descriptions[$name]) ? $descriptions[$name] : '');
         }
+
         echo "\n\n";
+
+        exit(0);
+    }
+
+    /**
+     *
+     */
+    public function renderErrors()
+    {
+        echo "\nErrors:";
+
+        foreach ($this->getErrors() as $error) {
+            echo "\n  {$error[0]}";
+        }
+
+        echo "\n\n";
+        
+        exit(1);
     }
 
     /**
@@ -193,7 +218,7 @@ abstract class Generator extends \CModel
 
         // todo: is this the best place to run validation logic
         if (!$generator->validate()) {
-            throw new Exception("Generator validation failed.");
+            $generator->renderErrors();
         }
 
         return $generator->generate();

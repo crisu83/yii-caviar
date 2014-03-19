@@ -72,16 +72,30 @@ abstract class FileGenerator extends Generator
     {
         return array(
             array('template', 'required'),
+            array('template', 'validateTemplate', 'skipOnError' => true),
         );
+    }
+
+    /**
+     * Validates the template for this generator.
+     *
+     * @param string $attribute the attribute to validate.
+     * @param array $params validation parameters.
+     */
+    public function validateTemplate($attribute, array $params)
+    {
+        if (!isset(self::$templates[$this->template])) {
+            $this->addError('template', "Unable to find template '{$this->template}'.");
+        }
     }
 
     /**
      * @inheritDoc
      */
-    public function attributeLabels()
+    public function attributeDescriptions()
     {
         return array_merge(
-            parent::attributeLabels(),
+            parent::attributeDescriptions(),
             array(
                 'template' => "Name of the template to use (default to '{$this->template}')",
             )
@@ -96,26 +110,10 @@ abstract class FileGenerator extends Generator
     protected function getTemplatePath()
     {
         if (!isset($this->templatePath)) {
-            $this->templatePath = $this->resolveTemplatePath($this->template);
+            $this->templatePath = self::$templates[$this->template] . '/' . $this->name;
         }
 
         return $this->templatePath;
-    }
-
-    /**
-     * Determines the template path for this generator.
-     *
-     * @param string $template name of the template.
-     * @return string template path.
-     * @throws \crisu83\yii_caviar\Exception if the template cannot be found.
-     */
-    protected function resolveTemplatePath($template)
-    {
-        if (!isset(self::$templates[$template])) {
-            throw new Exception("Unable to find template '$template'.");
-        }
-
-        return self::$templates[$template] . '/' . $this->name;
     }
 
     /**
