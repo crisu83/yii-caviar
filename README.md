@@ -70,7 +70,7 @@ You can view the command help by running the following command:
 yiic generate help
 ```
 
-Or the help for a particular generator by appending ```--help``` to your command:
+Or the help for a particular generator by appending ```-t``` (or ```--help```) to your command:
 
 ```
 yiic generate component --help
