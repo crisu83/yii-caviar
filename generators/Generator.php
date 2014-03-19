@@ -31,6 +31,11 @@ abstract class Generator extends \CModel
     public $subject;
 
     /**
+     * @var string name of the template to use.
+     */
+    public $template = 'default';
+
+    /**
      * @var string name of this generator.
      */
     protected $name = 'base';
@@ -95,7 +100,7 @@ abstract class Generator extends \CModel
      *
      * @return array attribute descriptions.
      */
-    public function attributeDescriptions()
+    public function attributeHelp()
     {
         return array(
             'subject' => "Name for the item that will be generated.",
@@ -109,8 +114,8 @@ abstract class Generator extends \CModel
     {
         $names = array();
 
-        $reflection = new \ReflectionClass($this);
-        foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+        $class = new \ReflectionClass($this);
+        foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             $names[] = $property->name;
         }
 
@@ -129,12 +134,11 @@ abstract class Generator extends \CModel
         echo "\n  generator [context:]subject [--option=value ...]\n";
 
         $attributes = $this->attributeNames();
-        $descriptions = $this->attributeDescriptions();
+        $help = $this->attributeHelp();
 
         echo "\nOptions:";
         foreach ($attributes as $name) {
-            $offset = $this->calculateHelpLabelOffset($name);
-            echo "\n  " . $name . str_repeat(' ', $offset) . (isset($descriptions[$name]) ? $descriptions[$name] : '');
+            echo "\n  " . $this->padHelpLabel($name) . (isset($help[$name]) ? $help[$name] : '');
         }
 
         echo "\n\n";
@@ -225,14 +229,14 @@ abstract class Generator extends \CModel
     }
 
     /**
-     * Calculates the offset between the label and the description in the help output.
+     * String pads a label the amount necessary to align the help texts.
      *
      * @param string $label label text.
-     * @return int offset.
+     * @return string padded label.
      */
-    public static function calculateHelpLabelOffset($label)
+    public static function padHelpLabel($label)
     {
-        return ($len = 20 - strlen($label)) > 0 ? $len : 0;
+        return $label . str_repeat(' ', ($len = 20 - strlen($label)) > 0 ? $len : 0);
     }
 
     /**

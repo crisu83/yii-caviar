@@ -30,6 +30,11 @@ class Command extends \CConsoleCommand
     public $basePath;
 
     /**
+     * @var string name of the template to use as default.
+     */
+    public $defaultTemplate = 'default';
+
+    /**
      * @var string name of the temporary directory.
      */
     public $tempDir = 'tmp';
@@ -89,9 +94,9 @@ class Command extends \CConsoleCommand
     {
         list($action, $options, $args) = $this->resolveRequest($args);
 
-        if ($action === 'help') {
+        if ($action === 'help' || $action === '-h') {
             $this->renderHelp();
-        } elseif (in_array('--help', $options)) {
+        } elseif (in_array('--help', $options) || in_array('-h', $args)) {
             $this->renderGeneratorHelp($action);
         } else {
             $this->runGenerator($action, $options, $args);
@@ -115,8 +120,7 @@ class Command extends \CConsoleCommand
         foreach ($this->generators as $name => $config) {
             $generator = Generator::create($name, $config);
 
-            $offset = Generator::calculateHelpLabelOffset($name);
-            echo "\n  $name" . str_repeat(' ', $offset) . $generator->getDescription();
+            echo "\n  " . Generator::padHelpLabel($name) . $generator->getDescription();
         }
 
         echo "\n\n";
@@ -141,6 +145,10 @@ class Command extends \CConsoleCommand
         list ($config['context'], $config['subject']) = strpos($args[0], ':') !== false
             ? explode(':', $args[0])
             : array('app', $args[0]);
+
+        if (!isset($config['template'])) {
+            $config['template'] = $this->defaultTemplate;
+        }
 
         echo "\nGENERATE COMMAND";
         echo "\n  Running '$name' generator.\n";

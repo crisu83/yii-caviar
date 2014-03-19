@@ -82,6 +82,16 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @inheritDoc
      */
+    public function init()
+    {
+        $this->tableName = $this->subject;
+
+        $this->initComponent();
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function rules()
     {
         return array_merge(
@@ -96,7 +106,7 @@ class ModelGenerator extends ComponentGenerator
                     'message' => '{attribute} should only contain word characters, dots, and an optional ending asterisk.'
                 ),
                 array('connectionId', 'validateConnectionId', 'skipOnError' => true),
-                //array('tableName', 'validateTableName', 'skipOnError' => true),
+                array('tableName', 'validateTableName', 'skipOnError' => true),
                 array(
                     'tablePrefix',
                     'match',
@@ -188,10 +198,10 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @inheritDoc
      */
-    public function attributeDescriptions()
+    public function attributeHelp()
     {
         return array_merge(
-            parent::attributeDescriptions(),
+            parent::attributeHelp(),
             array(
                 'connectionId' => "Name of the database connection to use (defaults to '{$this->connectionId}').",
                 'tablePrefix' => "Prefix for table names (defaults to null).",
@@ -207,7 +217,6 @@ class ModelGenerator extends ComponentGenerator
      */
     public function generate()
     {
-        $this->tableName = $this->subject;
         $this->tablePrefix = $this->getDbConnection()->tablePrefix;
 
         list ($schema, $tables) = $this->resolveSchemaAndTables();

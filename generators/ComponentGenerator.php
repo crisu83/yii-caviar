@@ -78,10 +78,10 @@ class ComponentGenerator extends FileGenerator
     /**
      * @inheritDoc
      */
-    public function attributeDescriptions()
+    public function attributeHelp()
     {
         return array_merge(
-            parent::attributeDescriptions(),
+            parent::attributeHelp(),
             array(
                 'baseClass' => "Name of the class to extend (defaults to {$this->baseClass}).",
                 'namespace' => "Name of the namespace to use (defaults to '{$this->namespace}').",
