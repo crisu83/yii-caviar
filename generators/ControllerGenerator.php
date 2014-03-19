@@ -81,10 +81,10 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @inheritDoc
      */
-    public function attributeDescriptions()
+    public function attributeHelp()
     {
         return array_merge(
-            parent::attributeDescriptions(),
+            parent::attributeHelp(),
             array(
                 'actions' => "Space separated actions to generate (defaults to '{$this->actions}').",
                 'subject' => "Name of the controller that will be generated.",
@@ -124,9 +124,10 @@ class ControllerGenerator extends ComponentGenerator
                     array(
                         'subject' => $actionId,
                         'context' => $this->context,
+                        'template' => $this->template,
                         'templatePath' => "{$this->getTemplatePath()}/views",
                         'templateData' => array(
-                            'controllerClass' => "{$this->namespace}\\{$this->className}",
+                            'controllerClass' => $this->className,
                             'cssClass' => "{$this->subject}-controller $actionId-action",
                         ),
                         'filePath' => "views/{$this->subject}",

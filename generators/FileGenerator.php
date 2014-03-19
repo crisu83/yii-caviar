@@ -16,11 +16,6 @@ use crisu83\yii_caviar\Exception;
 abstract class FileGenerator extends Generator
 {
     /**
-     * @var string name of the template to use.
-     */
-    public $template = 'default';
-
-    /**
      * @var string name for the item that will be generated.
      */
     protected $name = 'file';
@@ -92,10 +87,10 @@ abstract class FileGenerator extends Generator
     /**
      * @inheritDoc
      */
-    public function attributeDescriptions()
+    public function attributeHelp()
     {
         return array_merge(
-            parent::attributeDescriptions(),
+            parent::attributeHelp(),
             array(
                 'template' => "Name of the template to use (default to '{$this->template}')",
             )
@@ -153,10 +148,6 @@ abstract class FileGenerator extends Generator
      */
     protected function compile($templateFile, array $templateData)
     {
-        if (!is_file($templateFile)) {
-            throw new Exception("Unable to find template file '$templateFile'.");
-        }
-
         if (!isset(self::$compiler)) {
             self::$compiler = new Compiler();
         }
@@ -296,14 +287,6 @@ abstract class FileGenerator extends Generator
     public function getFileName()
     {
         return $this->fileName;
-    }
-
-    /**
-     * @param string $fileName
-     */
-    public function setFileName($fileName)
-    {
-        $this->fileName = $fileName;
     }
 
     /**
