@@ -15,25 +15,25 @@ class ConfigGenerator extends ViewGenerator
     /**
      * @var string
      */
-    public $name = 'config';
+    protected $name = 'config';
 
     /**
      * @var string
      */
-    public $description = 'Configuration file generator.';
+    protected $description = 'Generates configuration files.';
 
     /**
      * @var string
      */
-    public $defaultTemplate = 'config.txt';
+    protected $defaultTemplate = 'config.txt';
 
     /**
      * @var string
      */
-    public $fileName = 'config.php';
+    protected $fileName = 'config.php';
 
     /**
      * @var string
      */
-    public $filePath = 'config';
+    protected $filePath = 'config';
 }

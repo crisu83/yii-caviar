@@ -1,7 +1,7 @@
-yii-caviar
-==========
+Caviar
+======
 
-Next generation code generation for Yii.
+Code generation with logic-less templates for Yii.
 
 Motivation
 ----------
@@ -59,10 +59,22 @@ return array(
 When that is done you can use it to generate code:
 
 ```
-yiic generate <name> [<context>:]<subject> [--key=value] ...
+yiic generate generator [context:]subject [--option=value ...]
 ```
 
-Where __name__ is the name of the generator, __context__ is the name of your application (e.g. app) and __subject__ is a name for what you are generating.
+Where __generator__ is the name of the generator, __context__ is the name of your application (e.g. app) and __subject__ is a name for the item that will be generated.
+
+You can view the command help by running the following command:
+
+```
+yiic generate help
+```
+
+And also the help for a particular generator by appending ```--help``` to your command:
+
+```
+yiic generate component --help
+```
 
 Generators
 ----------
@@ -77,7 +89,7 @@ The following generators are already supported:
 - view
 - webapp
 
-And at least the following generators will be included in the first release:
+And following generators are planned to be included in the first release:
 
 - action
 - crud

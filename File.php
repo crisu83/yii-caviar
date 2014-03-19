@@ -13,33 +13,35 @@ namespace crisu83\yii_caviar;
 class File extends \CComponent
 {
     /**
-     * @var string an ID that uniquely identifies this code file.
+     * @var string unique identifier for this file.
      */
     public $id;
 
     /**
-     * @var string the file path that the new code should be saved to.
+     * @var string full path to where this file should be saved.
      */
     public $path;
 
     /**
-     * @var string the newly generated code content
+     * @var string contents of this file.
      */
     public $content;
 
     /**
-     * @var int
+     * @var int file mode.
      */
     public $mode = 0666;
 
     /**
-     * @var int
+     * @var int directory mode.
      */
     public $dirMode = 0777;
 
     /**
-     * @param string $path the file path that the new code should be saved to.
-     * @param string $content the newly generated code content.
+     * Creates a new file.
+     *
+     * @param string $path full path to where this file should be saved.
+     * @param string $content contents of this file.
      */
     public function __construct($path, $content)
     {
@@ -49,8 +51,10 @@ class File extends \CComponent
     }
 
     /**
-     * @return boolean
-     * @throws \crisu83\yii_caviar\Exception
+     * Saves this file.
+     *
+     * @return boolean whether the file was saved successfully.
+     * @throws \crisu83\yii_caviar\Exception if the file or the directory cannot be created.
      */
     public function save()
     {
@@ -78,15 +82,9 @@ class File extends \CComponent
     }
 
     /**
-     * @return string
-     */
-    public function resolveFileName()
-    {
-        return substr($this->path, strrpos($this->path, DIRECTORY_SEPARATOR) + 1);
-    }
-
-    /**
-     * @return string
+     * Returns the extension for this file.
+     *
+     * @return string extension.
      */
     public function resolveExtension()
     {

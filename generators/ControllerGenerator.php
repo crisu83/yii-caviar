@@ -17,22 +17,7 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $name = 'controller';
-
-    /**
-     * @var string
-     */
-    public $description = 'Controller class generator.';
-
-    /**
-     * @var string
-     */
-    public $defaultTemplate = 'controller.txt';
-
-    /**
-     * @var string
-     */
-    public $baseClass = '\CController';
+    public $baseClass;
 
     /**
      * @var string
@@ -45,15 +30,31 @@ class ControllerGenerator extends ComponentGenerator
     public $actions = 'index';
 
     /**
+     * @var string
+     */
+    protected $name = 'controller';
+
+    /**
+     * @var string
+     */
+    protected $description = 'Generates controller classes.';
+
+    /**
+     * @var string
+     */
+    protected $defaultTemplate = 'controller.txt';
+
+    /**
+     * @var string
+     */
+    protected $coreClass = '\CController';
+
+    /**
      * @inheritDoc
      */
     public function init()
     {
         $this->className = ucfirst(strtolower($this->subject)) . 'Controller';
-
-        if (is_string($this->actions)) {
-            $this->actions = explode(' ', $this->actions);
-        }
 
         $this->initComponent();
     }
@@ -63,10 +64,31 @@ class ControllerGenerator extends ComponentGenerator
      */
     public function rules()
     {
-        // todo: add validation rules.
         return array_merge(
             parent::rules(),
-            array()
+            array(
+                array('actions', 'filter', 'filter' => 'trim'),
+                array(
+                    'actions',
+                    'match',
+                    'pattern' => '/^\w+[\w\s,]*$/',
+                    'message' => '{attribute} should only contain word characters, spaces and commas.'
+                ),
+            )
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function attributeDescriptions()
+    {
+        return array_merge(
+            parent::attributeDescriptions(),
+            array(
+                'actions' => "Space separated actions to generate (defaults to '{$this->actions}').",
+                'subject' => "Name of the controller that will be generated.",
+            )
         );
     }
 
@@ -76,6 +98,10 @@ class ControllerGenerator extends ComponentGenerator
     public function generate()
     {
         $files = array();
+
+        if (is_string($this->actions)) {
+            $this->actions = explode(' ', $this->actions);
+        }
 
         $files[] = new File(
             $this->resolveFilePath(),

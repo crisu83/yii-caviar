@@ -17,20 +17,20 @@ class WebAppGenerator extends Generator
     /**
      * @var string
      */
-    public $name = 'webapp';
+    protected $name = 'webapp';
 
     /**
      * @var string
      */
-    public $description = 'Web application generator.';
+    protected $description = 'Generates a web application.';
 
     /**
      * @var array
      */
-    public $structure = array(
+    protected $structure = array(
         'component' => array(
-            array('controller', 'className' => 'Controller', 'baseClass' => '\CController'),
-            array('userIdentity', 'className' => 'UserIdentity', 'baseClass' => '\CUserIdentity'),
+            array('controller', 'baseClass' => '\CController'),
+            array('userIdentity', 'baseClass' => '\CUserIdentity'),
         ),
         'controller' => array(
             array('site'),
@@ -48,6 +48,19 @@ class WebAppGenerator extends Generator
      */
     public function init()
     {
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function attributeDescriptions()
+    {
+        return array_merge(
+            parent::attributeDescriptions(),
+            array(
+                'subject' => "Name of the application to generate.",
+            )
+        );
     }
 
     /**
@@ -101,5 +114,13 @@ class WebAppGenerator extends Generator
     protected function createFile($fileName, $filePath, $content = '')
     {
         return new File(self::$basePath . "/{$this->subject}/$filePath/$fileName", $content);
+    }
+
+    /**
+     * @param array $structure
+     */
+    public function setStructure($structure)
+    {
+        $this->structure = $structure;
     }
 }

@@ -16,34 +16,49 @@ use crisu83\yii_caviar\Exception;
 abstract class FileGenerator extends Generator
 {
     /**
-     * @var array
+     * @var string name of the template to use.
      */
-    public $defaultTemplate = 'file.txt';
+    public $template = 'default';
 
     /**
-     * @var string
+     * @var string name for the item that will be generated.
      */
-    public $templatePath;
+    protected $name = 'file';
 
     /**
-     * @var array
+     * @var string short description of what this generator does.
      */
-    public $templateData = array();
+    protected $description = 'Abstract base class for file generation.';
 
     /**
-     * @var string
+     * @var string path to the templates for this generator.
      */
-    public $fileName;
+    protected $templatePath;
 
     /**
-     * @var string
+     * @var array additional data to pass to the template compiler.
      */
-    public $filePath;
+    protected $templateData = array();
 
     /**
-     * @var string
+     * @var string file name for the default template.
      */
-    public $tab = '    ';
+    protected $defaultTemplate;
+
+    /**
+     * @var string file name for the generated file.
+     */
+    protected $fileName;
+
+    /**
+     * @var string file path to where the generated file should be saved.
+     */
+    protected $filePath;
+
+    /**
+     * @var string tab character.
+     */
+    protected $tab = '    ';
 
     /**
      * @var Compiler
@@ -56,47 +71,68 @@ abstract class FileGenerator extends Generator
     public function rules()
     {
         return array(
-            array('defaultTemplate, fileName, filePath', 'required'),
-            array('templatePath, data', 'safe'),
+            array('template', 'required'),
+            array('template', 'validateTemplate', 'skipOnError' => true),
         );
     }
 
     /**
-     * @return string
+     * Validates the template for this generator.
+     *
+     * @param string $attribute the attribute to validate.
+     * @param array $params validation parameters.
+     */
+    public function validateTemplate($attribute, array $params)
+    {
+        if (!isset(self::$templates[$this->template])) {
+            $this->addError('template', "Unable to find template '{$this->template}'.");
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function attributeDescriptions()
+    {
+        return array_merge(
+            parent::attributeDescriptions(),
+            array(
+                'template' => "Name of the template to use (default to '{$this->template}')",
+            )
+        );
+    }
+
+    /**
+     * Returns the template path for this generator.
+     *
+     * @return string template path.
      */
     protected function getTemplatePath()
     {
         if (!isset($this->templatePath)) {
-            $this->templatePath = $this->resolveTemplatePath($this->template);
+            $this->templatePath = self::$templates[$this->template] . '/' . $this->name;
         }
 
         return $this->templatePath;
     }
 
     /**
-     * @param $template
-     * @return string
-     * @throws \crisu83\yii_caviar\Exception
-     */
-    protected function resolveTemplatePath($template)
-    {
-        if (!isset(self::$templates[$template])) {
-            throw new Exception("Unable to find template '$template'.");
-        }
-
-        return self::$templates[$template] . '/' . $this->name;
-    }
-
-    /**
-     * @param array $templates
-     * @return string
-     * @throws \crisu83\yii_caviar\Exception
+     * Determines the template file to use for generating the file.
+     *
+     * @param array $templates list of candidate templates.
+     * @return string path to the template file.
+     * @throws \crisu83\yii_caviar\Exception if no template files are found.
      */
     protected function resolveTemplateFile(array $templates = array())
     {
         $templatePath = $this->getTemplatePath();
+        $templates = array_merge($templates, $this->getDefaultTemplates());
 
-        foreach (array_merge($templates, $this->getDefaultTemplates()) as $templateFile) {
+        if (empty($templates)) {
+            throw new Exception("No templates available.");
+        }
+
+        foreach ($templates as $templateFile) {
             $filePath = "$templatePath/$templateFile";
 
             if (is_file($filePath)) {
@@ -104,14 +140,16 @@ abstract class FileGenerator extends Generator
             }
         }
 
-        throw new Exception("Unable to find template file.");
+        throw new Exception("Unable to find template file {$templates[0]}.");
     }
 
     /**
-     * @param string $templateFile
-     * @param array $templateData
-     * @return string
-     * @throws \crisu83\yii_caviar\Exception
+     * Compiles a template file with the given data.
+     *
+     * @param string $templateFile path to the template file.
+     * @param array $templateData data to pass to the template.
+     * @return string the compiled template.
+     * @throws \crisu83\yii_caviar\Exception if the template file cannot be found.
      */
     protected function compile($templateFile, array $templateData)
     {
@@ -130,7 +168,9 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * @return array
+     * Returns a list of the default templates.
+     *
+     * @return array list of templates.
      */
     protected function getDefaultTemplates()
     {
@@ -138,7 +178,9 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * @return string
+     * Returns the full path to where the generated files should be saved.
+     *
+     * @return string file path.
      */
     protected function resolveFilePath()
     {
@@ -146,8 +188,10 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * @param $amount
-     * @return string
+     * Renders a "tab" character.
+     *
+     * @param int $amount number of indents.
+     * @return string the rendered indent.
      */
     protected function indent($amount = 1)
     {
@@ -155,8 +199,10 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * @param $value
-     * @return bool
+     * Returns whether the given value is a reserved keyword in php.
+     *
+     * @param string $value value to check.
+     * @return bool whether the value is a reserved keyword.
      */
     protected function isReservedKeyword($value)
     {
@@ -242,5 +288,61 @@ abstract class FileGenerator extends Generator
             'xor',
         );
         return in_array(strtolower($value), $keywords, true);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileName()
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param string $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilePath()
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param string $filePath
+     */
+    public function setFilePath($filePath)
+    {
+        $this->filePath = $filePath;
+    }
+
+    /**
+     * @param string $tab
+     */
+    public function setTab($tab)
+    {
+        $this->tab = $tab;
+    }
+
+    /**
+     * @param string $templatePath
+     */
+    public function setTemplatePath($templatePath)
+    {
+        $this->templatePath = $templatePath;
+    }
+
+    /**
+     * @param array $templateData
+     */
+    public function setTemplateData($templateData)
+    {
+        $this->templateData = $templateData;
     }
 }
