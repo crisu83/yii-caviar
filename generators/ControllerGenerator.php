@@ -127,6 +127,7 @@ class ControllerGenerator extends ComponentGenerator
                         'template' => $this->template,
                         'templatePath' => "{$this->getTemplatePath()}/views",
                         'templateData' => array(
+                            'controllerNamespace' => $this->className,
                             'controllerClass' => $this->className,
                             'cssClass' => "{$this->subject}-controller $actionId-action",
                         ),

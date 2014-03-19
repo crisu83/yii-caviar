@@ -16,6 +16,11 @@ use crisu83\yii_caviar\Exception;
 abstract class FileGenerator extends Generator
 {
     /**
+     * @var string name of the template to use.
+     */
+    public $template = 'default';
+
+    /**
      * @var string name for the item that will be generated.
      */
     protected $name = 'file';

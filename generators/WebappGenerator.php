@@ -11,6 +11,7 @@
 namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\File;
+use crisu83\yii_caviar\Line;
 
 class WebAppGenerator extends Generator
 {
@@ -74,6 +75,15 @@ class WebAppGenerator extends Generator
             array()
         );
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUsage()
+    {
+        return "{$this->name} subject [options]";
+    }
+
 
     /**
      * @inheritDoc

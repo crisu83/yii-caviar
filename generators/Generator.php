@@ -12,6 +12,7 @@ namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\File;
+use crisu83\yii_caviar\Line;
 
 abstract class Generator extends \CModel
 {
@@ -29,11 +30,6 @@ abstract class Generator extends \CModel
      * @var string name for the item that will be generated.
      */
     public $subject;
-
-    /**
-     * @var string name of the template to use.
-     */
-    public $template = 'default';
 
     /**
      * @var string name of this generator.
@@ -127,21 +123,37 @@ abstract class Generator extends \CModel
      */
     public function renderHelp()
     {
-        echo strtoupper("\n{$this->name} generator\n");
-        echo "  $this->description\n";
+        $this->renderHeader();
 
-        echo "\nUsage:";
-        echo "\n  generator [context:]subject [--option=value ...]\n";
+        echo Line::begin('Usage:', Line::YELLOW)->nl();
+        echo Line::begin()
+            ->indent(2)
+            ->text($this->getUsage())
+            ->nl(2);
+
+        // Options
+        echo Line::begin('Options:', Line::YELLOW)->nl();
+        echo Line::begin()
+            ->indent(2)
+            ->text('--help', Line::MAGENTA)
+            ->to(21)
+            ->text('-h', Line::MAGENTA)
+            ->text('Display this help message.')
+            ->nl(1);
 
         $attributes = $this->attributeNames();
         $help = $this->attributeHelp();
 
-        echo "\nOptions:";
-        foreach ($attributes as $name) {
-            echo "\n  " . $this->padHelpLabel($name) . (isset($help[$name]) ? $help[$name] : '');
-        }
+        sort($attributes);
 
-        echo "\n\n";
+        foreach ($attributes as $name) {
+            echo Line::begin()
+                ->indent(2)
+                ->text("--$name", Line::MAGENTA)
+                ->to(24)
+                ->text(isset($help[$name]) ? $help[$name] : '')
+                ->nl();
+        }
 
         exit(0);
     }
@@ -149,16 +161,29 @@ abstract class Generator extends \CModel
     /**
      *
      */
+    public function renderHeader()
+    {
+        echo Line::begin(ucfirst($this->name) . ' generator', Line::YELLOW)->nl();
+        echo Line::begin()
+            ->indent(2)
+            ->text($this->description)
+            ->nl(2);
+    }
+
+    /**
+     *
+     */
     public function renderErrors()
     {
-        echo "\nErrors:";
+        echo Line::begin('Errors:', 'red')->nl();
 
         foreach ($this->getErrors() as $error) {
-            echo "\n  {$error[0]}";
+            echo Line::begin()
+                ->indent(2)
+                ->text('- ' . $error[0])
+                ->nl();
         }
 
-        echo "\n\n";
-        
         exit(1);
     }
 
@@ -168,6 +193,14 @@ abstract class Generator extends \CModel
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsage()
+    {
+        return "{$this->name} [context:]subject [options]";
     }
 
     /**
@@ -220,23 +253,11 @@ abstract class Generator extends \CModel
     {
         $generator = self::create($name, $config);
 
-        // todo: is this the best place to run validation logic
         if (!$generator->validate()) {
             $generator->renderErrors();
         }
 
         return $generator->generate();
-    }
-
-    /**
-     * String pads a label the amount necessary to align the help texts.
-     *
-     * @param string $label label text.
-     * @return string padded label.
-     */
-    public static function padHelpLabel($label)
-    {
-        return $label . str_repeat(' ', ($len = 20 - strlen($label)) > 0 ? $len : 0);
     }
 
     /**
