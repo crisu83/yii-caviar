@@ -3,8 +3,8 @@ Caviar
 
 Code generation with logic-less templates for Yii.
 
-Motivation
-----------
+Caviar vs Gii
+-------------
 
 You might be wondering why you should use Caviar instead of Gii, so let us take a look at how they differ from each other.
 
@@ -70,7 +70,7 @@ You can view the command help by running the following command:
 yiic generate help
 ```
 
-And also the help for a particular generator by appending ```--help``` to your command:
+Or the help for a particular generator by appending ```--help``` to your command:
 
 ```
 yiic generate component --help
@@ -89,7 +89,7 @@ The following generators are already supported:
 - view
 - webapp
 
-And following generators are planned to be included in the first release:
+The following generators are planned to be included in the first release:
 
 - action
 - crud
