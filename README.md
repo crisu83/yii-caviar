@@ -26,13 +26,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 
 Either run
 
-```
+```bash
 php composer.phar require --prefer-dist crisu83/yii-caviar "*"
 ```
 
 or add
 
-```
+```bash
 "crisu83/yii-caviar": "*"
 ```
 
@@ -43,7 +43,7 @@ Usage
 
 Add the a command to your console application configuration:
 
-```
+```php
 return array(
   ...
   'commandMap' => array(
@@ -58,21 +58,21 @@ return array(
 
 When that is done you can use it to generate code:
 
-```
-yiic generate generator [context:]subject [--option=value ...]
+```bash
+yiic generate generator [context:]subject [options]
 ```
 
 Where __generator__ is the name of the generator, __context__ is the name of your application (e.g. app) and __subject__ is a name for the item that will be generated.
 
 You can view the command help by running the following command:
 
-```
+```bash
 yiic generate help
 ```
 
 Or the help for a particular generator by appending ```-t``` (or ```--help```) to your command:
 
-```
+```bash
 yiic generate component --help
 ```
 
@@ -83,17 +83,25 @@ Caviar uses namespaces by default, mainly because it has a proven to be a good p
 
 Disabling namespaces for all generators can easily be done by adding the following to your configuration:
 
-```
-generate' => array(
+```php
+'generate' => array(
   ...
   'defaultTemplate' => 'noNamespaces',
   'enableNamespaces' => false,
   'templates' => array(
-    'noNamespaces' => 'vendor.crisu83.yii-caviar.templates.no-namespaces',
+    'noNamespaces' => '<path-to-caviar>/templates/no-namespaces',
   ),
 )
 ```
 
+Fancy UI
+--------
+
+Caviar has a fancy UI, here are a few screenshots showing the UI.
+
+- https://www.dropbox.com/s/x29drr6ldkku7ft/Screenshot%202014-03-20%2017.32.20.png
+- https://www.dropbox.com/s/vrr0vj709xtxba4/Screenshot%202014-03-20%2017.36.31.png
+- https://www.dropbox.com/s/0mm2x6g1ad7d5fz/Screenshot%202014-03-20%2017.39.26.png
 
 Generators
 ----------
