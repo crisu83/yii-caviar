@@ -11,7 +11,6 @@
 namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\File;
-use crisu83\yii_caviar\Line;
 
 class WebAppGenerator extends Generator
 {
@@ -123,7 +122,7 @@ class WebAppGenerator extends Generator
      */
     protected function createFile($fileName, $filePath, $content = '')
     {
-        return new File(self::$basePath . "/{$this->subject}/$filePath/$fileName", $content);
+        return new File(self::$config['basePath'] . "/{$this->subject}/$filePath/$fileName", $content);
     }
 
     /**

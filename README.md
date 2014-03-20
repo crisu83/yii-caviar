@@ -76,6 +76,25 @@ Or the help for a particular generator by appending ```-t``` (or ```--help```) t
 yiic generate component --help
 ```
 
+Disable namespaces
+------------------
+
+Caviar uses namespaces by default, mainly because it has a proven to be a good practice in large scale applications, but it also allows you to easily disable namespaces for all generators.
+
+Disabling namespaces for all generators can easily be done by adding the following to your configuration:
+
+```
+generate' => array(
+  ...
+  'defaultTemplate' => 'noNamespaces',
+  'enableNamespaces' => false,
+  'templates' => array(
+    'noNamespaces' => 'vendor.crisu83.yii-caviar.templates.no-namespaces',
+  ),
+)
+```
+
+
 Generators
 ----------
 

@@ -74,6 +74,7 @@ class ControllerGenerator extends ComponentGenerator
                     'pattern' => '/^\w+[\w\s,]*$/',
                     'message' => '{attribute} should only contain word characters, spaces and commas.'
                 ),
+                array('baseClass', 'validateClass', 'extends' => '\CController', 'skipOnError' => true),
             )
         );
     }
@@ -127,8 +128,7 @@ class ControllerGenerator extends ComponentGenerator
                         'template' => $this->template,
                         'templatePath' => "{$this->getTemplatePath()}/views",
                         'templateData' => array(
-                            'controllerNamespace' => $this->className,
-                            'controllerClass' => $this->className,
+                            'controllerClass' => $this->resolveControllerClass(),
                             'cssClass' => "{$this->subject}-controller $actionId-action",
                         ),
                         'filePath' => "views/{$this->subject}",
@@ -163,5 +163,13 @@ class ControllerGenerator extends ComponentGenerator
         }
 
         return implode("\n\n{$this->indent()}", str_replace("\n", "\n{$this->indent()}", $actions));
+    }
+
+    /**
+     * @return string
+     */
+    protected function resolveControllerClass()
+    {
+        return $this->enableNamespaces ? "{$this->namespace}\\{$this->className}" : $this->className;
     }
 }
