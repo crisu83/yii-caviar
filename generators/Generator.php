@@ -47,19 +47,9 @@ abstract class Generator extends \CModel
     protected $context = 'app';
 
     /**
-     * @var array generator configurations.
+     * @var array
      */
-    protected static $generators = array();
-
-    /**
-     * @var array available templates.
-     */
-    protected static $templates = array();
-
-    /**
-     * @var string base path for all generated files.
-     */
-    protected static $basePath;
+    protected static $config = array();
 
     /**
      * Generates all necessary files.
@@ -221,12 +211,18 @@ abstract class Generator extends \CModel
      */
     public static function create($name, array $config = array())
     {
-        if (!isset(self::$generators[$name])) {
+        if (!isset(self::$config['generators'][$name])) {
             throw new Exception("Unknown generator '$name'.");
         }
 
-        $generator = \Yii::createComponent(\CMap::mergeArray(self::$generators[$name], $config));
+        $generator = \Yii::createComponent(\CMap::mergeArray(self::$config['generators'][$name], $config));
         $generator->init();
+
+        foreach (self::$config['defaults'] as $attribute => $value) {
+            if (property_exists($generator, $attribute)) {
+                $generator->$attribute = $value;
+            }
+        }
 
         return $generator;
     }
@@ -261,26 +257,20 @@ abstract class Generator extends \CModel
     }
 
     /**
-     * @param array $generators
+     * @param string $key
+     * @return mixed
      */
-    public static function setGenerators($generators)
+    public static function getConfigParam($key)
     {
-        self::$generators = $generators;
+        return isset(self::$config[$key]) ? self::$config[$key] : null;
     }
 
     /**
-     * @param array $templates
+     * @param string $key
+     * @param mixed $value
      */
-    public static function setTemplates($templates)
+    public static function setConfigParam($key, $value)
     {
-        self::$templates = $templates;
-    }
-
-    /**
-     * @param string $basePath
-     */
-    public static function setBasePath($basePath)
-    {
-        self::$basePath = $basePath;
+        self::$config[$key] = $value;
     }
 }

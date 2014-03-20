@@ -105,14 +105,15 @@ class ModelGenerator extends ComponentGenerator
                     'pattern' => '/^(\w+[\w\.]*|\*?|\w+\.\*)$/',
                     'message' => '{attribute} should only contain word characters, dots, and an optional ending asterisk.'
                 ),
-                array('connectionId', 'validateConnectionId', 'skipOnError' => true),
-                array('tableName', 'validateTableName', 'skipOnError' => true),
                 array(
                     'tablePrefix',
                     'match',
                     'pattern' => '/^[a-zA-Z_]\w*$/',
                     'message' => '{attribute} should only contain word characters.'
                 ),
+                array('connectionId', 'validateConnectionId', 'skipOnError' => true),
+                array('tableName', 'validateTableName', 'skipOnError' => true),
+                array('baseClass', 'validateClass', 'extends' => '\CActiveRecord', 'skipOnError' => true),
             )
         );
     }

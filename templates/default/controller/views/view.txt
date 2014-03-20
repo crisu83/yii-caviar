@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @var $CONTROLLERNAMESPACE$\$CONTROLLERCLASS$ $this
+ * @var $CONTROLLERCLASS$ $this
  */
 ?>
 <div class="$CSSCLASS$">
