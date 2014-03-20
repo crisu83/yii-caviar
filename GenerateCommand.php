@@ -45,6 +45,11 @@ class GenerateCommand extends \CConsoleCommand
     public $defaultTemplate = 'default';
 
     /**
+     * @var bool whether to enable namespaces.
+     */
+    public $enableNamespaces = true;
+
+    /**
      * @var string
      */
     protected $version = '1.0.0-beta';
@@ -228,9 +233,16 @@ class GenerateCommand extends \CConsoleCommand
     {
         $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
 
-        Generator::setGenerators($this->generators);
-        Generator::setTemplates($this->templates);
-        Generator::setBasePath($this->getTempPath());
+        Generator::setConfigParam('basePath', $this->getTempPath());
+        Generator::setConfigParam('generators', $this->generators);
+        Generator::setConfigParam('templates', $this->templates);
+        Generator::setConfigParam(
+            'defaults',
+            array(
+                'template' => $this->defaultTemplate,
+                'enableNamespaces' => $this->enableNamespaces,
+            )
+        );
     }
 
     /**
@@ -259,10 +271,6 @@ class GenerateCommand extends \CConsoleCommand
             ->nl(2);
 
         $generator = Generator::create($name, $config);
-
-        if (property_exists($generator, 'template') && !isset($generator->template)) {
-            $generator->template = $this->defaultTemplate;
-        }
 
         if (!$generator->validate()) {
             $generator->renderErrors();

@@ -10,6 +10,7 @@
 
 namespace crisu83\yii_caviar\generators;
 
+use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\File;
 
 class ComponentGenerator extends FileGenerator
@@ -18,6 +19,11 @@ class ComponentGenerator extends FileGenerator
      * @var string
      */
     public $baseClass;
+
+    /**
+     * @var bool
+     */
+    public $enableNamespaces = true;
 
     /**
      * @var string
@@ -95,10 +101,19 @@ class ComponentGenerator extends FileGenerator
      */
     public function rules()
     {
+        $enableNamespaces = $this->enableNamespaces;
+
         return array_merge(
             parent::rules(),
             array(
                 array('baseClass, namespace', 'filter', 'filter' => 'trim'),
+                array(
+                    'baseClass',
+                    'filter',
+                    'filter' => function ($value) use ($enableNamespaces) {
+                        return !$enableNamespaces ? ltrim($value, '\\') : $value;
+                    },
+                ),
                 array('baseClass, namespace', 'required'),
                 array(
                     'baseClass, namespace',
@@ -106,7 +121,7 @@ class ComponentGenerator extends FileGenerator
                     'pattern' => '/^[a-zA-Z_\\\\]+$/',
                     'message' => '{attribute} should only contain word characters and backslashes.'
                 ),
-                array('baseClass', 'validateBaseClass', 'skipOnError' => true),
+                array('baseClass', 'validateClass', 'extends' => '\CComponent', 'skipOnError' => true),
                 array('baseClass', 'validateReservedKeyword', 'skipOnError' => true),
             )
         );
@@ -118,14 +133,16 @@ class ComponentGenerator extends FileGenerator
      * @param string $attribute the attribute to validate.
      * @param array $params validation parameters.
      */
-    public function validateBaseClass($attribute, $params)
+    public function validateClass($attribute, $params)
     {
-        $className = @\Yii::import($this->baseClass, true);
+        $className = @\Yii::import($this->$attribute, true);
 
         if (!is_string($className) || !$this->classExists($className)) {
-            $this->addError('baseClass', "Class '{$this->baseClass}' does not exist or has syntax error.");
-        } elseif ($className !== $this->coreClass && !is_subclass_of($className, $this->coreClass)) {
-            $this->addError('baseClass', "'{$this->className}' must extend from {$this->coreClass}.");
+            $this->addError($attribute, "Class '$className' does not exist or has syntax error.");
+        } elseif (isset($params['extends'])
+            && ltrim($className, '\\') !== ltrim($params['extends'], '\\')
+            && !is_subclass_of($className, $params['extends'])) {
+            $this->addError('baseClass', "Class '$className' must extend from {$params['extends']}.");
         }
     }
 

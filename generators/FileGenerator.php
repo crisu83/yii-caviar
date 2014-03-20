@@ -18,7 +18,7 @@ abstract class FileGenerator extends Generator
     /**
      * @var string name of the template to use.
      */
-    public $template = 'default';
+    public $template;
 
     /**
      * @var string name for the item that will be generated.
@@ -84,7 +84,7 @@ abstract class FileGenerator extends Generator
      */
     public function validateTemplate($attribute, array $params)
     {
-        if (!isset(self::$templates[$this->template])) {
+        if (!isset(self::$config['templates'][$this->template])) {
             $this->addError('template', "Unable to find template '{$this->template}'.");
         }
     }
@@ -110,7 +110,7 @@ abstract class FileGenerator extends Generator
     protected function getTemplatePath()
     {
         if (!isset($this->templatePath)) {
-            $this->templatePath = self::$templates[$this->template] . '/' . $this->name;
+            $this->templatePath = self::$config['templates'][$this->template] . '/' . $this->name;
         }
 
         return $this->templatePath;
@@ -180,7 +180,7 @@ abstract class FileGenerator extends Generator
      */
     protected function resolveFilePath()
     {
-        return self::$basePath . "/{$this->filePath}/{$this->fileName}";
+        return self::$config['basePath'] . "/{$this->filePath}/{$this->fileName}";
     }
 
     /**
