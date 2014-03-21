@@ -32,6 +32,25 @@ class CodeGuy extends \Codeception\AbstractGuy
      * ----------------------------------------------
      *
      *
+     * @see Codeception\Module\CodeHelper::runCommand()
+     * @return \Codeception\Maybe
+     */
+    public function runCommand($cmd) {
+        $this->scenario->addStep(new \Codeception\Step\Action('runCommand', func_get_args()));
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+    /**
+     * This method is generated.
+     * Documentation taken from corresponding module.
+     * ----------------------------------------------
+     *
+     *
     * Conditional Assertion: Test won't be stopped on fail
      * @see Codeception\Module\CodeHelper::seeFile()
      * @return \Codeception\Maybe
@@ -70,6 +89,43 @@ class CodeGuy extends \Codeception\AbstractGuy
      *
      *
     * Conditional Assertion: Test won't be stopped on fail
+     * @see Codeception\Module\CodeHelper::seeFiles()
+     * @return \Codeception\Maybe
+     */
+    public function canSeeFiles($paths) {
+        $this->scenario->addStep(new \Codeception\Step\ConditionalAssertion('seeFiles', func_get_args()));
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+    /**
+     * This method is generated.
+     * Documentation taken from corresponding module.
+     * ----------------------------------------------
+     *
+     *
+     * @see Codeception\Module\CodeHelper::seeFiles()
+     * @return \Codeception\Maybe
+     */
+    public function seeFiles($paths) {
+        $this->scenario->addStep(new \Codeception\Step\Assertion('seeFiles', func_get_args()));
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+    /**
+     * This method is generated.
+     * Documentation taken from corresponding module.
+     * ----------------------------------------------
+     *
+     *
+    * Conditional Assertion: Test won't be stopped on fail
      * @see Codeception\Module\CodeHelper::seeDirectory()
      * @return \Codeception\Maybe
      */
@@ -92,6 +148,25 @@ class CodeGuy extends \Codeception\AbstractGuy
      */
     public function seeDirectory($path) {
         $this->scenario->addStep(new \Codeception\Step\Assertion('seeDirectory', func_get_args()));
+        if ($this->scenario->running()) {
+            $result = $this->scenario->runStep();
+            return new Maybe($result);
+        }
+        return new Maybe();
+    }
+
+ 
+    /**
+     * This method is generated.
+     * Documentation taken from corresponding module.
+     * ----------------------------------------------
+     *
+     *
+     * @see Codeception\Module\CodeHelper::removeDir()
+     * @return \Codeception\Maybe
+     */
+    public function removeDir($path) {
+        $this->scenario->addStep(new \Codeception\Step\Action('removeDir', func_get_args()));
         if ($this->scenario->running()) {
             $result = $this->scenario->runStep();
             return new Maybe($result);

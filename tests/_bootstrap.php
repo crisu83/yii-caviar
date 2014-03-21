@@ -10,5 +10,3 @@ $vendor = dirname(__DIR__) . '/vendor';
 
 require($vendor . '/autoload.php');
 require($vendor . '/yiisoft/yii/framework/yii.php');
-require($vendor . '/crisu83/yii-testingtools/TestCase.php');
-require($vendor . '/crisu83/yii-testingtools/console/TestCase.php');
