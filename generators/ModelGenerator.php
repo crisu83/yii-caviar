@@ -67,11 +67,6 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    protected $modelClass;
-
-    /**
-     * @var string
-     */
     protected $tableName;
 
     /**
@@ -112,7 +107,7 @@ class ModelGenerator extends ComponentGenerator
                     'message' => '{attribute} should only contain word characters.'
                 ),
                 array('connectionId', 'validateConnectionId', 'skipOnError' => true),
-                array('tableName', 'validateTableName', 'skipOnError' => true),
+                //array('tableName', 'validateTableName', 'skipOnError' => true),
                 array('baseClass', 'validateClass', 'extends' => '\CActiveRecord', 'skipOnError' => true),
             )
         );
@@ -154,7 +149,6 @@ class ModelGenerator extends ComponentGenerator
                 $schema = '';
             }
 
-            $this->modelClass = '';
             $tables = $this->getDbConnection()->schema->getTables($schema);
             foreach ($tables as $table) {
                 if ($this->tablePrefix == '' || strpos($table->name, $this->tablePrefix) === 0) {
@@ -169,9 +163,6 @@ class ModelGenerator extends ComponentGenerator
         } else {
             if (($table = $this->getTableSchema($this->tableName)) === null) {
                 $this->addError('tableName', "Table '{$this->tableName}' does not exist.");
-            }
-            if ($this->modelClass === '') {
-                $this->addError('modelClass', 'Model Class cannot be blank.');
             }
 
             if (!$this->hasErrors($attribute) && ($invalidColumn = $this->checkColumns($table)) !== null) {
@@ -224,14 +215,12 @@ class ModelGenerator extends ComponentGenerator
 
         $files = array();
 
-        $this->modelClass = $this->className;
-
         foreach ($tables as $table) {
             $tableName = $this->removePrefix($table->name);
             $className = $this->generateClassName($table->name);
 
             $files[] = new File(
-                $this->resolveFilePath(),
+                self::$config->basePath . "/{$this->filePath}/$className.php",
                 $this->compile(
                     $this->resolveTemplateFile(),
                     array(
@@ -292,7 +281,7 @@ class ModelGenerator extends ComponentGenerator
     {
         /** @var \CDbConnection $connection */
         $connection = \Yii::app()->getComponent($this->connectionId);
-        return $connection->getSchema()->getTable($tableName, $connection->schemaCachingDuration !== 0);
+        return $connection->schema->getTable($tableName, $connection->schemaCachingDuration !== 0);
     }
 
     /**
@@ -449,6 +438,10 @@ class ModelGenerator extends ComponentGenerator
      */
     protected function getRelations($className)
     {
+        if (empty($this->relations)) {
+            $this->relations = $this->generateRelations();
+        }
+
         return isset($this->relations[$className]) ? $this->relations[$className] : array();
     }
 
@@ -685,12 +678,6 @@ class ModelGenerator extends ComponentGenerator
      */
     protected function generateClassName($tableName)
     {
-        if ($this->tableName === $tableName
-            || ($pos = strrpos($this->tableName, '.')) !== false && substr($this->tableName, $pos + 1) === $tableName
-        ) {
-            return $this->modelClass;
-        }
-
         $tableName = $this->removePrefix($tableName, false);
         // remove schema part (e.g. remove 'public2.' from 'public2.post')
         if (($pos = strpos($tableName, '.')) !== false) {

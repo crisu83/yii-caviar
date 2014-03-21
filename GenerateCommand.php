@@ -233,14 +233,18 @@ class GenerateCommand extends \CConsoleCommand
     {
         $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
 
-        Generator::setConfigParam('basePath', $this->getTempPath());
-        Generator::setConfigParam('generators', $this->generators);
-        Generator::setConfigParam('templates', $this->templates);
-        Generator::setConfigParam(
-            'defaults',
-            array(
-                'template' => $this->defaultTemplate,
-                'enableNamespaces' => $this->enableNamespaces,
+        Generator::setConfig(
+            \Yii::createComponent(
+                array(
+                    'class' => '\crisu83\yii_caviar\Config',
+                    'basePath' => $this->getTempPath(),
+                    'generators' => $this->generators,
+                    'templates' => $this->templates,
+                    'attributes' => array(
+                        'template' => $this->defaultTemplate,
+                        'enableNamespaces' => $this->enableNamespaces,
+                    ),
+                )
             )
         );
     }

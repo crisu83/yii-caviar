@@ -35,5 +35,5 @@ class LayoutGenerator extends ViewGenerator
     /**
      * @var string
      */
-    protected $filePath = 'views/layout';
+    protected $filePath = 'views/layouts';
 }

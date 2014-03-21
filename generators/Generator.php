@@ -10,6 +10,7 @@
 
 namespace crisu83\yii_caviar\generators;
 
+use crisu83\yii_caviar\Config;
 use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\File;
 use crisu83\yii_caviar\Line;
@@ -47,9 +48,9 @@ abstract class Generator extends \CModel
     protected $context = 'app';
 
     /**
-     * @var array
+     * @var Config
      */
-    protected static $config = array();
+    protected static $config;
 
     /**
      * Generates all necessary files.
@@ -211,14 +212,14 @@ abstract class Generator extends \CModel
      */
     public static function create($name, array $config = array())
     {
-        if (!isset(self::$config['generators'][$name])) {
+        if (!isset(self::$config->generators[$name])) {
             throw new Exception("Unknown generator '$name'.");
         }
 
-        $generator = \Yii::createComponent(\CMap::mergeArray(self::$config['generators'][$name], $config));
+        $generator = \Yii::createComponent(\CMap::mergeArray(self::$config->generators[$name], $config));
         $generator->init();
 
-        foreach (self::$config['defaults'] as $attribute => $value) {
+        foreach (self::$config->attributes as $attribute => $value) {
             if (property_exists($generator, $attribute)) {
                 $generator->$attribute = $value;
             }
@@ -257,20 +258,10 @@ abstract class Generator extends \CModel
     }
 
     /**
-     * @param string $key
-     * @return mixed
+     * @param Config $config
      */
-    public static function getConfigParam($key)
+    public static function setConfig(Config $config)
     {
-        return isset(self::$config[$key]) ? self::$config[$key] : null;
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $value
-     */
-    public static function setConfigParam($key, $value)
-    {
-        self::$config[$key] = $value;
+        self::$config = $config;
     }
 }
