@@ -27,7 +27,7 @@ class WebAppGenerator extends Generator
     /**
      * @var array
      */
-    protected $structure = array(
+    protected $generators = array(
         'component' => array(
             array('controller', 'baseClass' => '\CController'),
             array('userIdentity', 'baseClass' => '\CUserIdentity'),
@@ -44,11 +44,12 @@ class WebAppGenerator extends Generator
     );
 
     /**
-     * @inheritDoc
+     * @var array
      */
-    public function init()
-    {
-    }
+    protected $directories = array(
+        'runtime',
+        'web/assets',
+    );
 
     /**
      * @inheritDoc
@@ -66,23 +67,10 @@ class WebAppGenerator extends Generator
     /**
      * @inheritDoc
      */
-    public function rules()
-    {
-        // todo: add validation rules.
-        return array_merge(
-            parent::rules(),
-            array()
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getUsage()
     {
         return "{$this->name} subject [options]";
     }
-
 
     /**
      * @inheritDoc
@@ -91,7 +79,7 @@ class WebAppGenerator extends Generator
     {
         $files = array();
 
-        foreach ($this->structure as $name => $items) {
+        foreach ($this->generators as $name => $items) {
             foreach ($items as $config) {
                 $config['subject'] = array_shift($config);
                 $config['context'] = $this->subject;
@@ -99,8 +87,9 @@ class WebAppGenerator extends Generator
             }
         }
 
-        $files[] = $this->createGitKeepFile('runtime');
-        $files[] = $this->createGitKeepFile('web/assets');
+        foreach ($this->directories as $dir) {
+            $files[] = $this->createGitKeepFile($dir);
+        }
 
         return $files;
     }
@@ -122,14 +111,6 @@ class WebAppGenerator extends Generator
      */
     protected function createFile($fileName, $filePath, $content = '')
     {
-        return new File(self::$config['basePath'] . "/{$this->subject}/$filePath/$fileName", $content);
-    }
-
-    /**
-     * @param array $structure
-     */
-    public function setStructure($structure)
-    {
-        $this->structure = $structure;
+        return new File(self::$config->basePath . "/{$this->subject}/$filePath/$fileName", $content);
     }
 }

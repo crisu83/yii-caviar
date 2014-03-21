@@ -90,6 +90,7 @@ class ComponentGenerator extends FileGenerator
             parent::attributeHelp(),
             array(
                 'baseClass' => "Name of the class to extend (defaults to {$this->baseClass}).",
+                'enableNamespaces' => "Whether to enable namespaces (defaults to 'true').",
                 'namespace' => "Name of the namespace to use (defaults to '{$this->namespace}').",
                 'subject' => "Name of the component that will be generated.",
             )
