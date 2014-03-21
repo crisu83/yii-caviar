@@ -1,20 +1,23 @@
 {
-    "name": "crisu83/yii-caviar",
-    "description": "Next generation code generation for Yii.",
-    "type": "yii-extension",
-    "tags": ["generate", "command", "appetizer", "yii"],
-    "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Christoffer Niska",
-            "email": "ChristofferNiska@gmail.com"
-        }
-    ],
-    "require": {
-    },
-    "autoload": {
-    	"psr-4": {
-    		"crisu83\\yii_caviar\\": "./"
-    	}
+  "name": "crisu83/yii-caviar",
+  "description": "Next generation code generation for Yii.",
+  "type": "yii-extension",
+  "tags": ["generate", "command", "appetizer", "yii"],
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Christoffer Niska",
+      "email": "ChristofferNiska@gmail.com"
     }
+  ],
+  "require": {
+  },
+  "require-dev": {
+    "yiisoft/yii": "*"
+  }
+  "autoload": {
+    "psr-4": {
+      "crisu83\\yii_caviar\\": "./"
+    }
+  }
 }

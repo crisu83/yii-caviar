@@ -2,7 +2,9 @@
 
 namespace crisu83\yii_caviar\tests\unit;
 
-class GenerateCommandTest extends TestCase
+use \Codeception\TestCase\Test;
+
+class GenerateCommandTest extends Test
 {
    /**
     * @var \CodeGuy
@@ -11,57 +13,67 @@ class GenerateCommandTest extends TestCase
 
     public function testHelp()
     {
-        $this->assertEquals($this->runCommand('--help'), 0);
-        $this->assertEquals($this->runCommand('-h'), 0);
+        $I = $this->codeGuy;
+
+        $I->runCommand('--help');
+        $I->runCommand('-h');
     }
 
     public function testGenerateComponent()
     {
-        $this->assertEquals($this->runCommand('component --help'), 0);
-        $this->assertEquals($this->runCommand('component -h'), 0);
-        $this->assertEquals($this->runCommand('component foo'), 0);
-
         $I = $this->codeGuy;
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/components/Foo.php');
 
-        $this->removeApp();
+        $I->runCommand('component --help');
+        $I->runCommand('component -h');
+        $I->runCommand('component foo');
+
+        $I->canSeeFile('_data/app/components/Foo.php');
+
+        $I->removeDir('_data/app');
     }
 
     public function testGenerateConfig()
     {
-        $this->assertEquals($this->runCommand('config --help'), 0);
-        $this->assertEquals($this->runCommand('config -h'), 0);
-        $this->assertEquals($this->runCommand('config foo'), 0);
-
         $I = $this->codeGuy;
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/config/foo.php');
 
-        $this->removeApp();
+        $I->runCommand('config --help');
+        $I->runCommand('config -h');
+        $I->runCommand('config foo');
+
+        $I->canSeeFile('_data/app/config/foo.php');
+
+        $I->removeDir('_data/app');
     }
 
     public function testGenerateController()
     {
-        $this->assertEquals($this->runCommand('controller --help'), 0);
-        $this->assertEquals($this->runCommand('controller -h'), 0);
-        $this->assertEquals($this->runCommand('controller foo'), 0);
-
         $I = $this->codeGuy;
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/controllers/FooController.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/views/foo/index.php');
 
-        $this->removeApp();
+        $I->runCommand('controller --help');
+        $I->runCommand('controller -h');
+        $I->runCommand('controller foo');
+
+        $I->canSeeFiles(
+            array(
+                '_data/app/controllers/FooController.php',
+                '_data/app/views/foo/index.php',
+            )
+        );
+
+        $I->removeDir('_data/app');
     }
 
     public function testGenerateLayout()
     {
-        $this->assertEquals($this->runCommand('layout --help'), 0);
-        $this->assertEquals($this->runCommand('layout -h'), 0);
-        $this->assertEquals($this->runCommand('layout foo'), 0);
-
         $I = $this->codeGuy;
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/views/layouts/foo.php');
 
-        $this->removeApp();
+        $I->runCommand('layout --help');
+        $I->runCommand('layout -h');
+        $I->runCommand('layout foo');
+
+        $I->canSeeFile('_data/app/views/layouts/foo.php');
+
+        $I->removeDir('_data/app');
     }
 
     public function testGenerateModel()
@@ -92,57 +104,67 @@ class GenerateCommandTest extends TestCase
             'store',
         );
 
-        $this->assertEquals($this->runCommand("model --help"), 0);
-        $this->assertEquals($this->runCommand("model -h"), 0);
+        $I = $this->codeGuy;
+
+        $I->runCommand("model --help");
+        $I->runCommand("model -h");
 
         foreach ($tables as $table) {
-            $this->assertEquals($this->runCommand("model $table"), 0);
+            $I->runCommand("model $table");
         }
 
-        $I = $this->codeGuy;
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Actor.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/ActorInfo.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Address.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Category.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/City.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Country.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Customer.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/CustomerList.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Film.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/FilmActor.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/FilmCategory.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/FilmList.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/FilmText.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Inventory.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Language.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/NicerButSlowerFilmList.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Payment.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Rental.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/SalesByFilmCategory.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/SalesByStore.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Staff.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/StaffList.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/models/Store.php');
+        $I->canSeeFiles(
+            array(
+                '_data/app/models/Actor.php',
+                '_data/app/models/ActorInfo.php',
+                '_data/app/models/Address.php',
+                '_data/app/models/Category.php',
+                '_data/app/models/City.php',
+                '_data/app/models/Country.php',
+                '_data/app/models/Customer.php',
+                '_data/app/models/CustomerList.php',
+                '_data/app/models/Film.php',
+                '_data/app/models/FilmActor.php',
+                '_data/app/models/FilmCategory.php',
+                '_data/app/models/FilmList.php',
+                '_data/app/models/FilmText.php',
+                '_data/app/models/Inventory.php',
+                '_data/app/models/Language.php',
+                '_data/app/models/NicerButSlowerFilmList.php',
+                '_data/app/models/Payment.php',
+                '_data/app/models/Rental.php',
+                '_data/app/models/SalesByFilmCategory.php',
+                '_data/app/models/SalesByStore.php',
+                '_data/app/models/Staff.php',
+                '_data/app/models/StaffList.php',
+                '_data/app/models/Store.php',
+            )
+        );
 
-        $this->removeApp();
+        $I->removeDir('_data/app');
     }
 
     public function testGenerateWebApp()
     {
-        $this->assertEquals($this->runCommand('webapp --help'), 0);
-        $this->assertEquals($this->runCommand('webapp -h'), 0);
-        $this->assertEquals($this->runCommand('webapp app'), 0);
-
         $I = $this->codeGuy;
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/components/Controller.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/components/UserIdentity.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/config/main.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/controllers/SiteController.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/runtime/.gitkeep');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/views/layouts/main.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/views/site/index.php');
-        $I->canSeeFile(dirname(__DIR__) . '/_data/app/web/assets/.gitkeep');
 
-        $this->removeApp();
+        $I->runCommand('webapp --help');
+        $I->runCommand('webapp -h');
+        $I->runCommand('webapp app');
+
+        $I->canSeeFiles(
+            array(
+                '_data/app/components/Controller.php',
+                '_data/app/components/UserIdentity.php',
+                '_data/app/config/main.php',
+                '_data/app/controllers/SiteController.php',
+                '_data/app/runtime/.gitkeep',
+                '_data/app/views/layouts/main.php',
+                '_data/app/views/site/index.php',
+                '_data/app/web/assets/.gitkeep',
+            )
+        );
+
+        $I->removeDir('_data/app');
     }
 }
