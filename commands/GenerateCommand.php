@@ -8,9 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace crisu83\yii_caviar;
+namespace crisu83\yii_caviar\commands;
 
 use crisu83\yii_caviar\generators\Generator;
+use crisu83\yii_caviar\helpers\Line;
 
 class GenerateCommand extends \CConsoleCommand
 {
@@ -100,7 +101,7 @@ class GenerateCommand extends \CConsoleCommand
     /**
      * @inheritDoc
      */
-    public function run(array $args)
+    public function run($args)
     {
         list($action, $options, $args) = $this->resolveRequest($args);
 
@@ -208,7 +209,9 @@ class GenerateCommand extends \CConsoleCommand
             $this->templates[$template] = $this->normalizePath($templatePath);
         }
 
-        $this->templates['default'] = __DIR__ . '/templates/default';
+        if (!isset($this->templates['default'])) {
+            $this->templates['default'] = dirname(__DIR__) . '/templates/default';
+        }
     }
 
     /**
@@ -236,7 +239,7 @@ class GenerateCommand extends \CConsoleCommand
         Generator::setConfig(
             \Yii::createComponent(
                 array(
-                    'class' => '\crisu83\yii_caviar\Config',
+                    'class' => '\crisu83\yii_caviar\components\Config',
                     'basePath' => $this->getTempPath(),
                     'generators' => $this->generators,
                     'templates' => $this->templates,

@@ -10,10 +10,10 @@
 
 namespace crisu83\yii_caviar\generators;
 
-use crisu83\yii_caviar\Config;
 use crisu83\yii_caviar\Exception;
-use crisu83\yii_caviar\File;
-use crisu83\yii_caviar\Line;
+use crisu83\yii_caviar\components\File;
+use crisu83\yii_caviar\components\Config;
+use crisu83\yii_caviar\helpers\Line;
 
 abstract class Generator extends \CModel
 {

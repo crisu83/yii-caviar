@@ -15,5 +15,5 @@ modules:
         Db:
             dsn: 'mysql:host=localhost;dbname=sakila'
             user: 'root'
-            password: 'appetizer'
-            dump: tests/_data/dump.sql
+            password: 'root'
+            dump: tests/_data/sakila-schema.sql

@@ -10,7 +10,7 @@
 
 namespace crisu83\yii_caviar\generators;
 
-use crisu83\yii_caviar\File;
+use crisu83\yii_caviar\components\File;
 
 class ModelGenerator extends ComponentGenerator
 {
@@ -224,7 +224,7 @@ class ModelGenerator extends ComponentGenerator
                 $this->compile(
                     $this->resolveTemplateFile(),
                     array(
-                        'tableName' => empty($schema) ? $tableName : $schema . '.' . $tableName,
+                        'tableName' => empty($schema) ? $tableName : "$schema.$tableName",
                         'className' => $className,
                         'baseClass' => $this->baseClass,
                         'namespace' => $this->namespace,

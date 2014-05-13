@@ -15,17 +15,17 @@ class GenerateCommandTest extends Test
     {
         $I = $this->codeGuy;
 
-        $I->runCommand('--help');
-        $I->runCommand('-h');
+        $I->runCommand('generate --help');
+        $I->runCommand('generate -h');
     }
 
     public function testGenerateComponent()
     {
         $I = $this->codeGuy;
 
-        $I->runCommand('component --help');
-        $I->runCommand('component -h');
-        $I->runCommand('component foo');
+        $I->runCommand('generate component --help');
+        $I->runCommand('generate component -h');
+        $I->runCommand('generate component foo');
 
         $I->canSeeFile('_data/app/components/Foo.php');
 
@@ -36,9 +36,9 @@ class GenerateCommandTest extends Test
     {
         $I = $this->codeGuy;
 
-        $I->runCommand('config --help');
-        $I->runCommand('config -h');
-        $I->runCommand('config foo');
+        $I->runCommand('generate config --help');
+        $I->runCommand('generate config -h');
+        $I->runCommand('generate config foo');
 
         $I->canSeeFile('_data/app/config/foo.php');
 
@@ -49,9 +49,9 @@ class GenerateCommandTest extends Test
     {
         $I = $this->codeGuy;
 
-        $I->runCommand('controller --help');
-        $I->runCommand('controller -h');
-        $I->runCommand('controller foo');
+        $I->runCommand('generate controller --help');
+        $I->runCommand('generate controller -h');
+        $I->runCommand('generate controller foo');
 
         $I->canSeeFiles(
             array(
@@ -67,9 +67,9 @@ class GenerateCommandTest extends Test
     {
         $I = $this->codeGuy;
 
-        $I->runCommand('layout --help');
-        $I->runCommand('layout -h');
-        $I->runCommand('layout foo');
+        $I->runCommand('generate layout --help');
+        $I->runCommand('generate layout -h');
+        $I->runCommand('generate layout foo');
 
         $I->canSeeFile('_data/app/views/layouts/foo.php');
 
@@ -106,11 +106,11 @@ class GenerateCommandTest extends Test
 
         $I = $this->codeGuy;
 
-        $I->runCommand("model --help");
-        $I->runCommand("model -h");
+        $I->runCommand("generate model --help");
+        $I->runCommand("generate model -h");
 
         foreach ($tables as $table) {
-            $I->runCommand("model $table");
+            $I->runCommand("generate model $table");
         }
 
         $I->canSeeFiles(
@@ -148,9 +148,9 @@ class GenerateCommandTest extends Test
     {
         $I = $this->codeGuy;
 
-        $I->runCommand('webapp --help');
-        $I->runCommand('webapp -h');
-        $I->runCommand('webapp app');
+        $I->runCommand('generate webapp --help');
+        $I->runCommand('generate webapp -h');
+        $I->runCommand('generate webapp app');
 
         $I->canSeeFiles(
             array(

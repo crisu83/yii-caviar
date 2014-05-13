@@ -1,6 +1,6 @@
 <?php
 
-namespace crisu83\yii_caviar;
+namespace crisu83\yii_caviar\components;
 
 class Compiler extends \CComponent
 {

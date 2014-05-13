@@ -10,8 +10,8 @@
 
 namespace crisu83\yii_caviar\generators;
 
-use crisu83\yii_caviar\Compiler;
 use crisu83\yii_caviar\Exception;
+use crisu83\yii_caviar\components\Compiler;
 
 abstract class FileGenerator extends Generator
 {
