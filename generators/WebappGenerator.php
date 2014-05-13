@@ -10,7 +10,7 @@
 
 namespace crisu83\yii_caviar\generators;
 
-use crisu83\yii_caviar\File;
+use crisu83\yii_caviar\components\File;
 
 class WebAppGenerator extends Generator
 {

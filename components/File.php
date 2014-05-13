@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace crisu83\yii_caviar;
+namespace crisu83\yii_caviar\components;
 
 class File extends \CComponent
 {
