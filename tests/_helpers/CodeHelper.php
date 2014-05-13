@@ -6,8 +6,9 @@ class CodeHelper extends \Codeception\Module
     public function runCommand($cmd)
     {
         $pipes = array();
+
         $process = proc_open(
-            "php yiic.php generate $cmd",
+            "php yiic.php $cmd",
             array(
                 array('pipe', 'r'),
                 array('pipe', 'w'),
@@ -28,9 +29,6 @@ class CodeHelper extends \Codeception\Module
 
     public function seeFile($path)
     {
-        if (!is_file(dirname(__DIR__) . '/' . $path)) {
-            var_dump(dirname(__DIR__) . '/' . $path);die;
-        }
         $this->assertTrue(is_file(dirname(__DIR__) . '/' . $path));
     }
 
