@@ -1,0 +1,72 @@
+<?php
+
+namespace $NAMESPACE$;
+
+/**
+ * This is the model class for table $TABLENAME$".
+ *
+ * The followings are the available columns in table '$TABLENAME$':
+ *
+ * $DOCPROPERTIES$
+ *
+ * The followings are the available model relations:
+ *
+ * $DOCRELATIONS$
+ */
+class $CLASSNAME$ extends $BASECLASS$
+{
+    /**
+     * @return string the associated database table name.
+     */
+    public function tableName()
+    {
+        return '$TABLENAME$';
+    }
+
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules()
+    {
+        return $RULES$;
+    }
+
+    /**
+     * @return array relational rules.
+     */
+    public function relations()
+    {
+        return $RELATIONS$;
+    }
+
+    /**
+     * @return array customized attribute labels (name=>label).
+     */
+    public function attributeLabels()
+    {
+        return $LABELS$;
+    }
+
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return \CActiveDataProvider the data provider that can return the models based on the search conditions.
+     */
+    public function search()
+    {
+        $criteria = new \CDbCriteria();
+
+        $SEARCHCONDITIONS$
+
+        return new \CActiveDataProvider($this, array('criteria' => $criteria));
+    }
+
+    /**
+     * Returns the static model of this class.
+     * @param string $className active record class name.
+     * @return $CLASSNAME$ the static model class.
+     */
+    public static function model($className = __CLASS__)
+    {
+        return parent::model($className);
+    }
+}

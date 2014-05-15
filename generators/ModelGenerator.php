@@ -107,7 +107,7 @@ class ModelGenerator extends ComponentGenerator
                     'message' => '{attribute} should only contain word characters.'
                 ),
                 array('connectionId', 'validateConnectionId', 'skipOnError' => true),
-                //array('tableName', 'validateTableName', 'skipOnError' => true),
+                array('tableName', 'validateTableName', 'skipOnError' => true),
                 array('baseClass', 'validateClass', 'extends' => '\CActiveRecord', 'skipOnError' => true),
             )
         );

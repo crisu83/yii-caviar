@@ -1,0 +1,11 @@
+/**
+ * Lists all models.
+ */
+public function actionIndex()
+{
+    $dataProvider = new \CActiveDataProvider('$MODELCLASS$');
+
+    $this->render('index', array(
+        'dataProvider' => $dataProvider,
+    ));
+}

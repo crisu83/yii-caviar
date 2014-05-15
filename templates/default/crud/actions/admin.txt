@@ -1,0 +1,16 @@
+/**
+ * Manages all models.
+ */
+public function actionAdmin()
+{
+    $model = new $MODELCLASS$('search');
+    $model->unsetAttributes();  // clear any default values
+
+    if (isset($_GET['$MODELCLASS$'])) {
+        $model->attributes = $_GET['$MODELCLASS$'];
+    }
+
+    $this->render('admin', array(
+        'model' => $model,
+    ));
+}

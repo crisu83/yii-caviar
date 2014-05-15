@@ -13,7 +13,7 @@ namespace crisu83\yii_caviar\commands;
 use crisu83\yii_caviar\generators\Generator;
 use crisu83\yii_caviar\helpers\Line;
 
-class GenerateCommand extends \CConsoleCommand
+class GenerateCommand extends Command
 {
     /**
      * @var array global generator configurations.
@@ -51,11 +51,6 @@ class GenerateCommand extends \CConsoleCommand
     public $enableNamespaces = true;
 
     /**
-     * @var string
-     */
-    protected $version = '1.0.0-beta';
-
-    /**
      * @var string path where the generated files are temporarily stored.
      */
     private $_tempPath;
@@ -72,6 +67,9 @@ class GenerateCommand extends \CConsoleCommand
         ),
         Generator::CONTROLLER => array(
             'class' => 'crisu83\yii_caviar\generators\ControllerGenerator',
+        ),
+        Generator::CRUD => array(
+            'class' => 'crisu83\yii_caviar\generators\CrudGenerator',
         ),
         Generator::LAYOUT => array(
             'class' => 'crisu83\yii_caviar\generators\LayoutGenerator',
@@ -151,14 +149,6 @@ class GenerateCommand extends \CConsoleCommand
         }
     }
 
-    protected function renderVersion()
-    {
-        return Line::begin('Caviar', Line::MAGENTA)
-            ->text('version')
-            ->text($this->version, Line::YELLOW)
-            ->nl(2);
-    }
-
     /**
      * Displays the help for a specific generator.
      *
@@ -169,20 +159,6 @@ class GenerateCommand extends \CConsoleCommand
         echo $this->renderVersion();
 
         Generator::help($name);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function usageError($message)
-    {
-        echo Line::begin('Error:', Line::RED)->nl();
-        echo Line::begin()
-            ->indent(2)
-            ->text($message)
-            ->nl();
-
-        exit(1);
     }
 
     /**
@@ -212,21 +188,6 @@ class GenerateCommand extends \CConsoleCommand
         if (!isset($this->templates['default'])) {
             $this->templates['default'] = dirname(__DIR__) . '/templates/default';
         }
-    }
-
-    /**
-     * Normalizes the given file path by converting aliases to real paths.
-     *
-     * @param string $filePath file path.
-     * @return string real path.
-     */
-    protected function normalizePath($filePath)
-    {
-        if (($path = \Yii::getPathOfAlias($filePath)) !== false) {
-            $filePath = $path;
-        }
-
-        return $filePath;
     }
 
     /**
@@ -310,33 +271,5 @@ class GenerateCommand extends \CConsoleCommand
         echo Line::begin('Removing temporary files ...', Line::GREEN)->nl();
 
         $this->removeDirectory($this->getTempPath());
-    }
-
-    /**
-     * Removes a specific directory.
-     *
-     * @param string $path full path to the directory to remove.
-     */
-    protected function removeDirectory($path)
-    {
-        if (!is_dir($path)) {
-            return;
-        }
-
-        foreach (scandir($path) as $entry) {
-            if ($entry === '.' || $entry === '..') {
-                continue;
-            }
-
-            $entryPath = $path . '/' . $entry;
-
-            if (is_dir($entryPath)) {
-                $this->removeDirectory($entryPath);
-            } else {
-                unlink($entryPath);
-            }
-        }
-
-        rmdir($path);
     }
 }

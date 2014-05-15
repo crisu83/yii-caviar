@@ -54,7 +54,7 @@ class ControllerGenerator extends ComponentGenerator
      */
     public function init()
     {
-        $this->className = ucfirst(strtolower($this->subject)) . 'Controller';
+        $this->className = ucfirst($this->subject) . 'Controller';
 
         $this->initComponent();
     }
@@ -100,9 +100,9 @@ class ControllerGenerator extends ComponentGenerator
     {
         $files = array();
 
-        if (is_string($this->actions)) {
-            $this->actions = explode(' ', $this->actions);
-        }
+        $this->actions = is_string($this->actions) && !empty($this->actions)
+            ? explode(' ', $this->actions)
+            : array();
 
         $files[] = new File(
             $this->resolveFilePath(),
@@ -118,6 +118,10 @@ class ControllerGenerator extends ComponentGenerator
         );
 
         foreach ($this->actions as $actionId) {
+            if (!file_exists("{$this->getTemplatePath()}/views/$actionId.txt")) {
+                continue;
+            }
+
             $files = array_merge(
                 $files,
                 Generator::run(

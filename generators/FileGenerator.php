@@ -126,6 +126,7 @@ abstract class FileGenerator extends Generator
     protected function resolveTemplateFile(array $templates = array())
     {
         $templatePath = $this->getTemplatePath();
+
         $templates = array_merge($templates, $this->getDefaultTemplates());
 
         if (empty($templates)) {
