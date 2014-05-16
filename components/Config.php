@@ -25,6 +25,11 @@ class Config extends \CComponent
     /**
      * @var array
      */
+    public $providers;
+
+    /**
+     * @var array
+     */
     public $templates;
 
     /**

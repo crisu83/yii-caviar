@@ -120,8 +120,7 @@ abstract class FileGenerator extends Generator
      * Determines the template file to use for generating the file.
      *
      * @param array $templates list of candidate templates.
-     * @return string path to the template file.
-     * @throws \crisu83\yii_caviar\Exception if no template files are found.
+     * @return string path to the template file or null if no template is found.
      */
     protected function resolveTemplateFile(array $templates = array())
     {
@@ -141,7 +140,7 @@ abstract class FileGenerator extends Generator
             }
         }
 
-        throw new Exception("Unable to find template file {$templates[0]}.");
+        return null;
     }
 
     /**
@@ -150,10 +149,14 @@ abstract class FileGenerator extends Generator
      * @param string $templateFile path to the template file.
      * @param array $templateData data to pass to the template.
      * @return string the compiled template.
-     * @throws \crisu83\yii_caviar\Exception if the template file cannot be found.
+     * @throws Exception if the template file cannot be found.
      */
-    protected function compile($templateFile, array $templateData)
+    protected function compile($templateFile, array $templateData = array())
     {
+        if (empty($templateFile)) {
+            throw new Exception('foo');
+        }
+
         if (!isset(self::$compiler)) {
             self::$compiler = new Compiler();
         }

@@ -10,9 +10,9 @@
 
 namespace crisu83\yii_caviar\generators;
 
+use crisu83\yii_caviar\components\Config;
 use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\components\File;
-use crisu83\yii_caviar\components\Config;
 use crisu83\yii_caviar\helpers\Line;
 
 abstract class Generator extends \CModel
@@ -31,6 +31,11 @@ abstract class Generator extends \CModel
      * @var string name for the item that will be generated.
      */
     public $subject;
+
+    /**
+     * @var array providers to use with this generator.
+     */
+    public $providers = array();
 
     /**
      * @var string name of this generator.
@@ -107,6 +112,25 @@ abstract class Generator extends \CModel
         }
 
         return $names;
+    }
+
+    /**
+     * Runs a specific provider for the given configuration.
+     *
+     * @param string $name name of the provider.
+     * @param array $config provider configuration.
+     * @return array map of the data provided.
+     * @throws Exception if the provider is not found.
+     */
+    protected function runProvider($name, array $config = array())
+    {
+        if (!isset(self::$config->providers[$name])) {
+            throw new Exception("Unknown provider '$name'.");
+        }
+
+        $provider = \Yii::createComponent(\CMap::mergeArray(self::$config->providers[$name], $config));
+
+        return $provider->provide();
     }
 
     /**
@@ -208,7 +232,7 @@ abstract class Generator extends \CModel
      * @param string $name name of the generator.
      * @param array $config generator configuration.
      * @return Generator the created generator.
-     * @throws \crisu83\yii_caviar\Exception if the generator is not found.
+     * @throws Exception if the generator is not found.
      */
     public static function create($name, array $config = array())
     {
@@ -243,8 +267,7 @@ abstract class Generator extends \CModel
      *
      * @param string $name name of the generator.
      * @param array $config generator configuration.
-     * @return \crisu83\yii_caviar\File[] list of files to generate.
-     * @throws \crisu83\yii_caviar\Exception if the generator validation fails.
+     * @return File[] list of files to generate.
      */
     public static function run($name, array $config = array())
     {
@@ -255,6 +278,14 @@ abstract class Generator extends \CModel
         }
 
         return $generator->generate();
+    }
+
+    /**
+     * @return Config
+     */
+    public static function getConfig()
+    {
+        return self::$config;
     }
 
     /**

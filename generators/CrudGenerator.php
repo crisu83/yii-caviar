@@ -61,7 +61,7 @@ class CrudGenerator extends FileGenerator
                     'templatePath' => $this->getTemplatePath(),
                     'templateData' => array(
                         'modelClass' => ucfirst($this->subject),
-                        'modelNamespace' => "{$this->context}\\{$this->modelNamespace}",
+                        'modelNamespace' => !empty($this->modelNamespace) ? "{$this->context}\\{$this->modelNamespace}" : '',
                     ),
                     'baseClass' => $this->controllerBaseClass,
                     'namespace' => $this->controllerNamespace,

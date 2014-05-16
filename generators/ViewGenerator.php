@@ -35,7 +35,7 @@ class ViewGenerator extends FileGenerator
     public function init()
     {
         $this->fileName = "{$this->subject}.php";
-        $this->filePath = "{$this->context}/$this->filePath";
+        $this->filePath = "{$this->context}/{$this->filePath}";
     }
 
     /**

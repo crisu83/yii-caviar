@@ -27,6 +27,11 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @var string
      */
+    public $filePath = 'models';
+
+    /**
+     * @var string
+     */
     public $connectionId = 'db';
 
     /**

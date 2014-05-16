@@ -11,6 +11,7 @@
 namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\components\File;
+use crisu83\yii_caviar\providers\Provider;
 
 class ComponentGenerator extends FileGenerator
 {
@@ -20,14 +21,14 @@ class ComponentGenerator extends FileGenerator
     public $baseClass;
 
     /**
-     * @var bool
+     * @var string
      */
-    public $enableNamespaces = true;
+    public $namespace = 'components';
 
     /**
      * @var string
      */
-    public $namespace = 'components';
+    public $filePath = 'components';
 
     /**
      * @var string
@@ -75,9 +76,9 @@ class ComponentGenerator extends FileGenerator
             $this->className = ucfirst($this->subject);
         }
 
-        $this->namespace = "{$this->context}\\{$this->namespace}";
+        $this->namespace = !empty($this->namespace) ? "{$this->context}\\{$this->namespace}" : '';
         $this->fileName = "{$this->className}.php";
-        $this->filePath = $this->namespaceToPath();
+        $this->filePath = "{$this->context}/{$this->filePath}";
     }
 
     /**
@@ -89,7 +90,6 @@ class ComponentGenerator extends FileGenerator
             parent::attributeHelp(),
             array(
                 'baseClass' => "Name of the class to extend (defaults to {$this->baseClass}).",
-                'enableNamespaces' => "Whether to enable namespaces (defaults to 'true').",
                 'namespace' => "Name of the namespace to use (defaults to '{$this->namespace}').",
                 'subject' => "Name of the component that will be generated.",
             )
@@ -101,20 +101,11 @@ class ComponentGenerator extends FileGenerator
      */
     public function rules()
     {
-        $enableNamespaces = $this->enableNamespaces;
-
         return array_merge(
             parent::rules(),
             array(
                 array('baseClass, namespace', 'filter', 'filter' => 'trim'),
-                array(
-                    'baseClass',
-                    'filter',
-                    'filter' => function ($value) use ($enableNamespaces) {
-                        return !$enableNamespaces ? ltrim($value, '\\') : $value;
-                    },
-                ),
-                array('baseClass, namespace', 'required'),
+                array('baseClass', 'required'),
                 array(
                     'baseClass, namespace',
                     'match',
@@ -170,10 +161,13 @@ class ComponentGenerator extends FileGenerator
             $this->resolveFilePath(),
             $this->compile(
                 $this->resolveTemplateFile(),
-                array(
-                    'className' => $this->className,
-                    'baseClass' => $this->baseClass,
-                    'namespace' => $this->namespace,
+                $this->runProvider(
+                    Provider::COMPONENT,
+                    array(
+                        'className' => $this->className,
+                        'baseClass' => $this->baseClass,
+                        'namespace' => $this->namespace,
+                    )
                 )
             )
         );
@@ -190,13 +184,5 @@ class ComponentGenerator extends FileGenerator
     protected function classExists($name)
     {
         return class_exists($name, false) && in_array(preg_replace('/^\\\\/', '', $name), get_declared_classes());
-    }
-
-    /**
-     * @return string
-     */
-    protected function namespaceToPath()
-    {
-        return str_replace('\\', '/', $this->namespace);
     }
 }

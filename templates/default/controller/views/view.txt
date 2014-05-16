@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @var $CONTROLLERCLASS$ $this
+ * $DOCVARS$
  */
 ?>
 <div class="$CSSCLASS$">
-
+    
 </div>

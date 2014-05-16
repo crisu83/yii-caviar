@@ -11,6 +11,7 @@
 namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\components\File;
+use crisu83\yii_caviar\providers\Provider;
 
 class ControllerGenerator extends ComponentGenerator
 {
@@ -23,6 +24,16 @@ class ControllerGenerator extends ComponentGenerator
      * @var string
      */
     public $namespace = 'controllers';
+
+    /**
+     * @var string
+     */
+    public $filePath = 'controllers';
+
+    /**
+     * @var string
+     */
+    public $provider = Provider::CONTROLLER;
 
     /**
      * @var string|array
@@ -100,27 +111,38 @@ class ControllerGenerator extends ComponentGenerator
     {
         $files = array();
 
-        $this->actions = is_string($this->actions) && !empty($this->actions)
-            ? explode(' ', $this->actions)
-            : array();
+        $this->actions = $this->normalizeActions($this->actions);
 
         $files[] = new File(
             $this->resolveFilePath(),
             $this->compile(
                 $this->resolveTemplateFile(),
-                array(
-                    'className' => $this->className,
-                    'baseClass' => $this->baseClass,
-                    'namespace' => $this->namespace,
-                    'actions' => $this->renderActions(),
+                $this->runProvider(
+                    $this->provider,
+                    array(
+                        'className' => $this->className,
+                        'baseClass' => $this->baseClass,
+                        'namespace' => $this->namespace,
+                        'actions' => $this->renderActions(),
+                    )
                 )
             )
         );
 
         foreach ($this->actions as $actionId) {
-            if (!file_exists("{$this->getTemplatePath()}/views/$actionId.txt")) {
+            if ($this->resolveTemplateFile(array("views/$actionId.txt", "views/view.txt")) === null) {
                 continue;
             }
+
+            $templateData = $this->runProvider(
+                Provider::VIEW,
+                array(
+                    'cssClass' => "{$this->subject}-controller $actionId-action",
+                    'vars' => array(
+                        'this' => $this->resolveControllerClass(),
+                    ),
+                )
+            );
 
             $files = array_merge(
                 $files,
@@ -131,10 +153,7 @@ class ControllerGenerator extends ComponentGenerator
                         'context' => $this->context,
                         'template' => $this->template,
                         'templatePath' => "{$this->getTemplatePath()}/views",
-                        'templateData' => array(
-                            'controllerClass' => $this->resolveControllerClass(),
-                            'cssClass' => "{$this->subject}-controller $actionId-action",
-                        ),
+                        'templateData' => $templateData,
                         'filePath' => "views/{$this->subject}",
                     )
                 )
@@ -155,8 +174,8 @@ class ControllerGenerator extends ComponentGenerator
             $actions[] = $this->compile(
                 $this->resolveTemplateFile(
                     array(
-                        "/actions/$actionId.txt",
-                        "/actions/action.txt",
+                        "actions/$actionId.txt",
+                        "actions/action.txt",
                     )
                 ),
                 array(
@@ -174,6 +193,17 @@ class ControllerGenerator extends ComponentGenerator
      */
     protected function resolveControllerClass()
     {
-        return $this->enableNamespaces ? "{$this->namespace}\\{$this->className}" : $this->className;
+        return !empty($this->namespace) ? "{$this->namespace}\\{$this->className}" : $this->className;
+    }
+
+    /**
+     * Normalizes the given actions to an array.
+     *
+     * @param string|array $actions actions.
+     * @return array normalized actions.
+     */
+    protected function normalizeActions($actions)
+    {
+        return is_string($actions) && !empty($actions) ? explode(' ', $actions) : array();
     }
 }
