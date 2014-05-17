@@ -12,6 +12,7 @@ namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\components\Compiler;
+use crisu83\yii_caviar\providers\Provider;
 
 abstract class FileGenerator extends Generator
 {
@@ -19,6 +20,11 @@ abstract class FileGenerator extends Generator
      * @var string name of the template to use.
      */
     public $template;
+
+    /**
+     * @var array providers to use with this generator.
+     */
+    public $providers = array();
 
     /**
      * @var string name for the item that will be generated.
@@ -103,6 +109,53 @@ abstract class FileGenerator extends Generator
     }
 
     /**
+     * Runs the providers for this generator.
+     *
+     * @param array $attributes an array of attributes to pass to providers.
+     * @return array an array with the provided data.
+     */
+    protected function runProviders(array $attributes = array())
+    {
+        $data = array();
+
+        foreach ($this->providers as $name => $config) {
+            if (is_string($config)) {
+                $name = $config;
+                $config = array();
+            }
+
+            $provider = $this->createProvider($name, \CMap::mergeArray(self::$config->providers[$name], $config));
+
+            foreach ($attributes as $attribute => $value) {
+                if (property_exists($provider, $attribute)) {
+                    $provider->$attribute = $value;
+                }
+            }
+
+            $data = array_merge($data, $provider->provide());
+        }
+
+        return $data;
+    }
+
+    /**
+     * Creates a specific provider for the given configuration.
+     *
+     * @param string $name name of the provider.
+     * @param array $config provider configuration.
+     * @return Provider provider created.
+     * @throws Exception if the provider is not found.
+     */
+    protected function createProvider($name, array $config = array())
+    {
+        if (!isset(self::$config->providers[$name])) {
+            throw new Exception("Unknown provider '$name'.");
+        }
+
+        return \Yii::createComponent(\CMap::mergeArray(self::$config->providers[$name], $config));
+    }
+
+    /**
      * Returns the template path for this generator.
      *
      * @return string template path.
@@ -144,27 +197,36 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * Compiles a template file with the given data.
+     * Compiles the template for this generator.
      *
-     * @param string $templateFile path to the template file.
-     * @param array $templateData data to pass to the template.
+     * @param array $attributes attributes for the providers.
      * @return string the compiled template.
      * @throws Exception if the template file cannot be found.
      */
-    protected function compile($templateFile, array $templateData = array())
+    protected function compile(array $attributes = array())
     {
-        if (empty($templateFile)) {
-            throw new Exception('foo');
-        }
+        return $this->compileTemplate($this->resolveTemplateFile(), $attributes);
+    }
 
+    /**
+     * Compiles a specific template file.
+     *
+     * @param string $templateFile path to the template file.
+     * @param array $attributes attributes for the providers.
+     * @return string the compiled template.
+     * @throws Exception if the template file cannot be found.
+     */
+    protected function compileTemplate($templateFile, array $attributes = array())
+    {
         if (!isset(self::$compiler)) {
             self::$compiler = new Compiler();
         }
 
-        return self::$compiler->compile(
-            file_get_contents($templateFile),
-            array_merge($this->templateData, $templateData)
-        );
+        if (!is_file($templateFile)) {
+            throw new Exception("Could not find template file '$templateFile'.");
+        }
+
+        return self::$compiler->compile(file_get_contents($templateFile), $this->runProviders($attributes));
     }
 
     /**

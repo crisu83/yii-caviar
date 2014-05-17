@@ -2,7 +2,7 @@
 
 namespace crisu83\yii_caviar\providers;
 
-class ControllerProvider extends ComponentProvider
+class ControllerProvider extends Provider
 {
     /**
      * @var string
@@ -19,11 +19,8 @@ class ControllerProvider extends ComponentProvider
      */
     public function provide()
     {
-        return array_merge(
-            parent::provide(),
-            array(
-                'actions' => '',
-            )
+        return array(
+            'actions' => $this->actions,
         );
     }
 }

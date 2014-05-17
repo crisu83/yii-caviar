@@ -31,6 +31,13 @@ class ComponentGenerator extends FileGenerator
     public $filePath = 'components';
 
     /**
+    * @var array providers to use with this generator.
+*/
+    public $providers = array(
+        Provider::COMPONENT,
+    );
+
+    /**
      * @var string
      */
     protected $name = 'component';
@@ -160,14 +167,10 @@ class ComponentGenerator extends FileGenerator
         $files[] = new File(
             $this->resolveFilePath(),
             $this->compile(
-                $this->resolveTemplateFile(),
-                $this->runProvider(
-                    Provider::COMPONENT,
-                    array(
-                        'className' => $this->className,
-                        'baseClass' => $this->baseClass,
-                        'namespace' => $this->namespace,
-                    )
+                array(
+                    'className' => $this->className,
+                    'baseClass' => $this->baseClass,
+                    'namespace' => $this->namespace,
                 )
             )
         );

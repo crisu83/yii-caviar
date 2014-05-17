@@ -33,11 +33,6 @@ abstract class Generator extends \CModel
     public $subject;
 
     /**
-     * @var array providers to use with this generator.
-     */
-    public $providers = array();
-
-    /**
      * @var string name of this generator.
      */
     protected $name = 'base';
@@ -112,25 +107,6 @@ abstract class Generator extends \CModel
         }
 
         return $names;
-    }
-
-    /**
-     * Runs a specific provider for the given configuration.
-     *
-     * @param string $name name of the provider.
-     * @param array $config provider configuration.
-     * @return array map of the data provided.
-     * @throws Exception if the provider is not found.
-     */
-    protected function runProvider($name, array $config = array())
-    {
-        if (!isset(self::$config->providers[$name])) {
-            throw new Exception("Unknown provider '$name'.");
-        }
-
-        $provider = \Yii::createComponent(\CMap::mergeArray(self::$config->providers[$name], $config));
-
-        return $provider->provide();
     }
 
     /**

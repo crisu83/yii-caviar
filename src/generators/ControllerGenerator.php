@@ -33,7 +33,10 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $provider = Provider::CONTROLLER;
+    public $providers = array(
+        Provider::COMPONENT,
+        Provider::CONTROLLER,
+    );
 
     /**
      * @var string|array
@@ -116,15 +119,11 @@ class ControllerGenerator extends ComponentGenerator
         $files[] = new File(
             $this->resolveFilePath(),
             $this->compile(
-                $this->resolveTemplateFile(),
-                $this->runProvider(
-                    $this->provider,
-                    array(
-                        'className' => $this->className,
-                        'baseClass' => $this->baseClass,
-                        'namespace' => $this->namespace,
-                        'actions' => $this->renderActions(),
-                    )
+                array(
+                    'className' => $this->className,
+                    'baseClass' => $this->baseClass,
+                    'namespace' => $this->namespace,
+                    'actions' => $this->renderActions(),
                 )
             )
         );
@@ -134,6 +133,7 @@ class ControllerGenerator extends ComponentGenerator
                 continue;
             }
 
+            /*
             $templateData = $this->runProvider(
                 Provider::VIEW,
                 array(
@@ -158,6 +158,7 @@ class ControllerGenerator extends ComponentGenerator
                     )
                 )
             );
+            */
         }
 
         return $files;
@@ -171,7 +172,7 @@ class ControllerGenerator extends ComponentGenerator
         $actions = array();
 
         foreach ($this->actions as $actionId) {
-            $actions[] = $this->compile(
+            $actions[] = $this->compileTemplate(
                 $this->resolveTemplateFile(
                     array(
                         "actions/$actionId.txt",

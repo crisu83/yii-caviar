@@ -2,7 +2,7 @@
 
 namespace crisu83\yii_caviar\providers;
 
-abstract class ComponentProvider extends Provider
+class ComponentProvider extends Provider
 {
     public $name = 'component';
 
