@@ -34,8 +34,7 @@ class ControllerGenerator extends ComponentGenerator
      * @var string
      */
     public $providers = array(
-        Provider::COMPONENT,
-        Provider::CONTROLLER,
+        array(Provider::CONTROLLER),
     );
 
     /**
@@ -133,17 +132,6 @@ class ControllerGenerator extends ComponentGenerator
                 continue;
             }
 
-            /*
-            $templateData = $this->runProvider(
-                Provider::VIEW,
-                array(
-                    'cssClass' => "{$this->subject}-controller $actionId-action",
-                    'vars' => array(
-                        'this' => $this->resolveControllerClass(),
-                    ),
-                )
-            );
-
             $files = array_merge(
                 $files,
                 Generator::run(
@@ -152,13 +140,20 @@ class ControllerGenerator extends ComponentGenerator
                         'subject' => $actionId,
                         'context' => $this->context,
                         'template' => $this->template,
-                        'templatePath' => "{$this->getTemplatePath()}/views",
-                        'templateData' => $templateData,
                         'filePath' => "views/{$this->subject}",
+                        'templatePath' => "{$this->getTemplatePath()}/views",
+                        'providers' => array(
+                            array(
+                                Provider::VIEW,
+                                'cssClass' => "{$this->subject}-controller $actionId-action",
+                                'vars' => array(
+                                    'this' => $this->resolveControllerClass(),
+                                ),
+                            ),
+                        ),
                     )
                 )
             );
-            */
         }
 
         return $files;
@@ -171,14 +166,11 @@ class ControllerGenerator extends ComponentGenerator
     {
         $actions = array();
 
+        // TODO change the structure of actions to support providers
+
         foreach ($this->actions as $actionId) {
-            $actions[] = $this->compileTemplate(
-                $this->resolveTemplateFile(
-                    array(
-                        "actions/$actionId.txt",
-                        "actions/action.txt",
-                    )
-                ),
+            $actions[] = $this->compileInternal(
+                $this->resolveTemplateFile(array("actions/$actionId.txt", "actions/action.txt")),
                 array(
                     'methodName' => 'action' . ucfirst($actionId),
                     'viewName' => $actionId,
@@ -186,7 +178,8 @@ class ControllerGenerator extends ComponentGenerator
             );
         }
 
-        return implode("\n\n{$this->indent()}", str_replace("\n", "\n{$this->indent()}", $actions));
+        $indent = '    ';
+        return implode("\n\n$indent", str_replace("\n", "\n$indent", $actions));
     }
 
     /**

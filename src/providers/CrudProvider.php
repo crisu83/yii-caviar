@@ -10,32 +10,25 @@
 
 namespace crisu83\yii_caviar\providers;
 
-class ControllerProvider extends ComponentProvider
+class CrudProvider extends ControllerProvider
 {
     /**
      * @var string
      */
-    public $name = 'controller';
+    public $modelClass;
 
     /**
      * @var string
      */
-    public $baseClass = '\CController';
+    public $modelNamespace;
 
-    /**
-     * @var array
-     */
-    public $actions;
-
-    /**
-     * @inheritDoc
-     */
     public function provide()
     {
         return array_merge(
             parent::provide(),
             array(
-                'actions' => $this->actions,
+                'modelClass' => $this->modelClass,
+                'modelNamespace' => $this->modelNamespace,
             )
         );
     }

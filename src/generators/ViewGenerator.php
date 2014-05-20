@@ -11,9 +11,17 @@
 namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\components\File;
+use crisu83\yii_caviar\providers\Provider;
 
 class ViewGenerator extends FileGenerator
 {
+    /**
+     * @var array
+     */
+    public $providers = array(
+        array(Provider::VIEW),
+    );
+
     /**
      * @var string
      */
@@ -59,13 +67,7 @@ class ViewGenerator extends FileGenerator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->compile(
-                $this->resolveTemplateFile(),
-                array(
-                    "{$this->subject}.txt",
-                    $this->defaultTemplate,
-                )
-            )
+            $this->compile($this->templateData)
         );
 
         return $files;

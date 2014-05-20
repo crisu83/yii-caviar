@@ -17,7 +17,7 @@ use crisu83\yii_caviar\helpers\Line;
 
 abstract class Generator extends \CModel
 {
-    // constants
+    // Constants for built in generators.
     const COMPONENT = 'component';
     const CONFIG = 'config';
     const CONTROLLER = 'controller';

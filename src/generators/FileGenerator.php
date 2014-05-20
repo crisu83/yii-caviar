@@ -62,11 +62,6 @@ abstract class FileGenerator extends Generator
     protected $filePath;
 
     /**
-     * @var string tab character.
-     */
-    protected $tab = '    ';
-
-    /**
      * @var Compiler
      */
     protected static $compiler;
@@ -111,48 +106,41 @@ abstract class FileGenerator extends Generator
     /**
      * Runs the providers for this generator.
      *
-     * @param array $attributes an array of attributes to pass to providers.
+     * @param array $properties an array of properties to set for providers.
      * @return array an array with the provided data.
      */
-    protected function runProviders(array $attributes = array())
+    protected function runProviders(array $properties = array())
     {
         $data = array();
 
-        foreach ($this->providers as $name => $config) {
-            if (is_string($config)) {
-                $name = $config;
-                $config = array();
+        foreach ($this->providers as $config) {
+            $className = array_shift($config);
+
+            if (isset(self::$config->providers[$className])) {
+                $config = \CMap::mergeArray(self::$config->providers[$className], $config);
+            } else {
+                $config['class'] = $className;
             }
 
-            $provider = $this->createProvider($name, \CMap::mergeArray(self::$config->providers[$name], $config));
+            if (!class_exists($config['class'])) {
+                throw new Exception("Provider '{$config['class']}' does not exist.");
+            }
 
-            foreach ($attributes as $attribute => $value) {
-                if (property_exists($provider, $attribute)) {
-                    $provider->$attribute = $value;
+            $class = new \ReflectionClass($config['class']);
+            foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+                $name = $property->getName();
+
+                if (!isset($config[$name]) && isset($properties[$name])) {
+                    $config[$name] = $properties[$name];
                 }
             }
+
+            $provider = \Yii::createComponent($config);
 
             $data = array_merge($data, $provider->provide());
         }
 
         return $data;
-    }
-
-    /**
-     * Creates a specific provider for the given configuration.
-     *
-     * @param string $name name of the provider.
-     * @param array $config provider configuration.
-     * @return Provider provider created.
-     * @throws Exception if the provider is not found.
-     */
-    protected function createProvider($name, array $config = array())
-    {
-        if (!isset(self::$config->providers[$name])) {
-            throw new Exception("Unknown provider '$name'.");
-        }
-
-        return \Yii::createComponent(\CMap::mergeArray(self::$config->providers[$name], $config));
     }
 
     /**
@@ -199,24 +187,24 @@ abstract class FileGenerator extends Generator
     /**
      * Compiles the template for this generator.
      *
-     * @param array $attributes attributes for the providers.
+     * @param array $properties properties to pass to the providers.
      * @return string the compiled template.
      * @throws Exception if the template file cannot be found.
      */
-    protected function compile(array $attributes = array())
+    protected function compile(array $properties = array())
     {
-        return $this->compileTemplate($this->resolveTemplateFile(), $attributes);
+        return $this->compileInternal($this->resolveTemplateFile(), $this->runProviders($properties));
     }
 
     /**
-     * Compiles a specific template file.
+     * Compiles a specific template file using the given data.
      *
      * @param string $templateFile path to the template file.
-     * @param array $attributes attributes for the providers.
+     * @param array $templateData an array of data to pass to the template.
      * @return string the compiled template.
      * @throws Exception if the template file cannot be found.
      */
-    protected function compileTemplate($templateFile, array $attributes = array())
+    protected function compileInternal($templateFile, array $templateData)
     {
         if (!isset(self::$compiler)) {
             self::$compiler = new Compiler();
@@ -226,7 +214,7 @@ abstract class FileGenerator extends Generator
             throw new Exception("Could not find template file '$templateFile'.");
         }
 
-        return self::$compiler->compile(file_get_contents($templateFile), $this->runProviders($attributes));
+        return self::$compiler->compile(file_get_contents($templateFile), $templateData);
     }
 
     /**
@@ -247,17 +235,6 @@ abstract class FileGenerator extends Generator
     protected function resolveFilePath()
     {
         return self::$config->basePath . "/{$this->filePath}/{$this->fileName}";
-    }
-
-    /**
-     * Renders a "tab" character.
-     *
-     * @param int $amount number of indents.
-     * @return string the rendered indent.
-     */
-    protected function indent($amount = 1)
-    {
-        return str_repeat($this->tab, $amount);
     }
 
     /**
@@ -377,26 +354,10 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * @param string $tab
-     */
-    public function setTab($tab)
-    {
-        $this->tab = $tab;
-    }
-
-    /**
      * @param string $templatePath
      */
     public function setTemplatePath($templatePath)
     {
         $this->templatePath = $templatePath;
-    }
-
-    /**
-     * @param array $templateData
-     */
-    public function setTemplateData($templateData)
-    {
-        $this->templateData = $templateData;
     }
 }

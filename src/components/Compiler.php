@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of Caviar.
+ *
+ * (c) 2014 Christoffer Niska
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace crisu83\yii_caviar\components;
 
@@ -14,6 +22,11 @@ class Compiler extends \CComponent
     public function compile($template, $data)
     {
         foreach ($data as $key => $value) {
+            // TODO refactor code so that we do not need this check
+            if (!is_string($value)) {
+                continue;
+            }
+
             $template = preg_replace("/\\$$key\\$/i", $value, $template);
         }
 

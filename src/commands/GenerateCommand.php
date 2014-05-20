@@ -94,6 +94,12 @@ class GenerateCommand extends Command
         Provider::CONTROLLER => array(
             'class' => '\crisu83\yii_caviar\providers\ControllerProvider',
         ),
+        Provider::CRUD => array(
+            'class' => '\crisu83\yii_caviar\providers\CrudProvider',
+        ),
+        Provider::MODEL => array(
+            'class' => '\crisu83\yii_caviar\providers\ModelProvider',
+        ),
         Provider::VIEW => array(
             'class' => '\crisu83\yii_caviar\providers\ViewProvider',
         ),
@@ -200,7 +206,7 @@ class GenerateCommand extends Command
         }
 
         if (!isset($this->templates['default'])) {
-            $this->templates['default'] = dirname(__DIR__) . '/templates/default';
+            $this->templates['default'] = realpath(dirname(__DIR__) . '/../templates/default');
         }
     }
 
