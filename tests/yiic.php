@@ -23,10 +23,6 @@ $config = array(
         'generate' => array(
             'class' => '\crisu83\yii_caviar\commands\GenerateCommand',
             'basePath' => $basePath,
-            'templates' => array(
-                'default' => "$root/templates/default",
-                'noNamespaces' => "$root/templates/no-namespaces",
-            ),
         ),
     ),
     'components' => array(
