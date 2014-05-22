@@ -12,6 +12,7 @@ namespace crisu83\yii_caviar\generators;
 
 use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\components\Compiler;
+use crisu83\yii_caviar\providers\Provider;
 
 abstract class FileGenerator extends Generator
 {
@@ -19,6 +20,11 @@ abstract class FileGenerator extends Generator
      * @var string name of the template to use.
      */
     public $template;
+
+    /**
+     * @var array providers to use with this generator.
+     */
+    public $providers = array();
 
     /**
      * @var string name for the item that will be generated.
@@ -54,11 +60,6 @@ abstract class FileGenerator extends Generator
      * @var string file path to where the generated file should be saved.
      */
     protected $filePath;
-
-    /**
-     * @var string tab character.
-     */
-    protected $tab = '    ';
 
     /**
      * @var Compiler
@@ -103,6 +104,51 @@ abstract class FileGenerator extends Generator
     }
 
     /**
+     * Runs a set of providers for this generator.
+     *
+     * @param array $providers provider configurations.
+     * @param array $properties an array of properties to set for providers.
+     * @return array an array with the provided data.
+     */
+    protected function runProviders(array $providers, array $properties = array())
+    {
+        $data = array();
+
+        foreach ($providers as $config) {
+            if (is_string($config)) {
+                $config = array($config);
+            }
+
+            $className = array_shift($config);
+
+            if (isset(self::$config->providers[$className])) {
+                $config = \CMap::mergeArray(self::$config->providers[$className], $config);
+            } else {
+                $config['class'] = $className;
+            }
+
+            if (!class_exists($config['class'])) {
+                throw new Exception("Provider '{$config['class']}' does not exist.");
+            }
+
+            $class = new \ReflectionClass($config['class']);
+            foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+                $name = $property->getName();
+
+                if (!isset($config[$name]) && isset($properties[$name])) {
+                    $config[$name] = $properties[$name];
+                }
+            }
+
+            $provider = \Yii::createComponent($config);
+
+            $data = array_merge($data, $provider->provide());
+        }
+
+        return $data;
+    }
+
+    /**
      * Returns the template path for this generator.
      *
      * @return string template path.
@@ -120,8 +166,7 @@ abstract class FileGenerator extends Generator
      * Determines the template file to use for generating the file.
      *
      * @param array $templates list of candidate templates.
-     * @return string path to the template file.
-     * @throws \crisu83\yii_caviar\Exception if no template files are found.
+     * @return string path to the template file or null if no template is found.
      */
     protected function resolveTemplateFile(array $templates = array())
     {
@@ -141,27 +186,54 @@ abstract class FileGenerator extends Generator
             }
         }
 
-        throw new Exception("Unable to find template file {$templates[0]}.");
+        return null;
     }
 
     /**
-     * Compiles a template file with the given data.
+     * Compiles the template for this generator.
+     *
+     * @param array $properties properties to pass to the providers.
+     * @return string the compiled template.
+     */
+    protected function compile(array $properties = array())
+    {
+        return $this->compileInternal($this->resolveTemplateFile(), $this->providers, $properties);
+    }
+
+    /**
+     * Compiles a specific template file using a set of providers.
      *
      * @param string $templateFile path to the template file.
-     * @param array $templateData data to pass to the template.
+     * @param array $providers a set of providers to run.
+     * @param array $properties properties to pass to the providers.
      * @return string the compiled template.
-     * @throws \crisu83\yii_caviar\Exception if the template file cannot be found.
      */
-    protected function compile($templateFile, array $templateData)
+    protected function compileInternal($templateFile, array $providers = array(), array $properties = array())
+    {
+        $providers = array_merge($this->providers, $providers);
+        $templateData = !empty($providers) ? $this->runProviders($providers, $properties) : array();
+        return $this->compileTemplate($templateFile, $templateData);
+    }
+
+    /**
+     * Compiles a specific template file using the given data.
+     *
+     * @param string $templateFile path to the template file.
+     * @param array $templateData an array of data to pass to the template.
+     * @return string the compiled template.
+     * @throws Exception if the template file cannot be found.
+     */
+    protected function compileTemplate($templateFile, array $templateData)
     {
         if (!isset(self::$compiler)) {
             self::$compiler = new Compiler();
         }
 
-        return self::$compiler->compile(
-            file_get_contents($templateFile),
-            array_merge($this->templateData, $templateData)
-        );
+        if (!is_file($templateFile)) {
+            throw new Exception("Could not find template file '$templateFile'.");
+        }
+
+        return self::$compiler->compile(file_get_contents($templateFile), $templateData);
     }
 
     /**
@@ -182,17 +254,6 @@ abstract class FileGenerator extends Generator
     protected function resolveFilePath()
     {
         return self::$config->basePath . "/{$this->filePath}/{$this->fileName}";
-    }
-
-    /**
-     * Renders a "tab" character.
-     *
-     * @param int $amount number of indents.
-     * @return string the rendered indent.
-     */
-    protected function indent($amount = 1)
-    {
-        return str_repeat($this->tab, $amount);
     }
 
     /**
@@ -312,26 +373,10 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * @param string $tab
-     */
-    public function setTab($tab)
-    {
-        $this->tab = $tab;
-    }
-
-    /**
      * @param string $templatePath
      */
     public function setTemplatePath($templatePath)
     {
         $this->templatePath = $templatePath;
-    }
-
-    /**
-     * @param array $templateData
-     */
-    public function setTemplateData($templateData)
-    {
-        $this->templateData = $templateData;
     }
 }

@@ -10,14 +10,14 @@
 
 namespace crisu83\yii_caviar\generators;
 
+use crisu83\yii_caviar\components\Config;
 use crisu83\yii_caviar\Exception;
 use crisu83\yii_caviar\components\File;
-use crisu83\yii_caviar\components\Config;
 use crisu83\yii_caviar\helpers\Line;
 
 abstract class Generator extends \CModel
 {
-    // constants
+    // Constants for built in generators.
     const COMPONENT = 'component';
     const CONFIG = 'config';
     const CONTROLLER = 'controller';
@@ -208,7 +208,7 @@ abstract class Generator extends \CModel
      * @param string $name name of the generator.
      * @param array $config generator configuration.
      * @return Generator the created generator.
-     * @throws \crisu83\yii_caviar\Exception if the generator is not found.
+     * @throws Exception if the generator is not found.
      */
     public static function create($name, array $config = array())
     {
@@ -243,8 +243,7 @@ abstract class Generator extends \CModel
      *
      * @param string $name name of the generator.
      * @param array $config generator configuration.
-     * @return \crisu83\yii_caviar\File[] list of files to generate.
-     * @throws \crisu83\yii_caviar\Exception if the generator validation fails.
+     * @return File[] list of files to generate.
      */
     public static function run($name, array $config = array())
     {
@@ -255,6 +254,14 @@ abstract class Generator extends \CModel
         }
 
         return $generator->generate();
+    }
+
+    /**
+     * @return Config
+     */
+    public static function getConfig()
+    {
+        return self::$config;
     }
 
     /**

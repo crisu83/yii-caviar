@@ -10,8 +10,10 @@
 
 namespace crisu83\yii_caviar\commands;
 
+use crisu83\yii_caviar\components\File;
 use crisu83\yii_caviar\generators\Generator;
 use crisu83\yii_caviar\helpers\Line;
+use crisu83\yii_caviar\providers\Provider;
 
 class GenerateCommand extends Command
 {
@@ -19,6 +21,11 @@ class GenerateCommand extends Command
      * @var array global generator configurations.
      */
     public $generators = array();
+
+    /**
+     * @var array global provider configurations.
+     */
+    public $providers = array();
 
     /**
      * @var array list of templates (name => path).
@@ -46,11 +53,6 @@ class GenerateCommand extends Command
     public $defaultTemplate = 'default';
 
     /**
-     * @var bool whether to enable namespaces.
-     */
-    public $enableNamespaces = true;
-
-    /**
      * @var string path where the generated files are temporarily stored.
      */
     private $_tempPath;
@@ -60,28 +62,49 @@ class GenerateCommand extends Command
      */
     private static $_builtInGenerators = array(
         Generator::COMPONENT => array(
-            'class' => 'crisu83\yii_caviar\generators\ComponentGenerator',
+            'class' => '\crisu83\yii_caviar\generators\ComponentGenerator',
         ),
         Generator::CONFIG => array(
-            'class' => 'crisu83\yii_caviar\generators\ConfigGenerator',
+            'class' => '\crisu83\yii_caviar\generators\ConfigGenerator',
         ),
         Generator::CONTROLLER => array(
-            'class' => 'crisu83\yii_caviar\generators\ControllerGenerator',
+            'class' => '\crisu83\yii_caviar\generators\ControllerGenerator',
         ),
         Generator::CRUD => array(
-            'class' => 'crisu83\yii_caviar\generators\CrudGenerator',
+            'class' => '\crisu83\yii_caviar\generators\CrudGenerator',
         ),
         Generator::LAYOUT => array(
-            'class' => 'crisu83\yii_caviar\generators\LayoutGenerator',
+            'class' => '\crisu83\yii_caviar\generators\LayoutGenerator',
         ),
         Generator::MODEL => array(
-            'class' => 'crisu83\yii_caviar\generators\ModelGenerator',
+            'class' => '\crisu83\yii_caviar\generators\ModelGenerator',
         ),
         Generator::VIEW => array(
-            'class' => 'crisu83\yii_caviar\generators\ViewGenerator',
+            'class' => '\crisu83\yii_caviar\generators\ViewGenerator',
         ),
         Generator::WEBAPP => array(
-            'class' => 'crisu83\yii_caviar\generators\WebAppGenerator',
+            'class' => '\crisu83\yii_caviar\generators\WebAppGenerator',
+        ),
+    );
+
+    private static $_builtInProviders = array(
+        Provider::ACTION => array(
+            'class' => '\crisu83\yii_caviar\providers\ActionProvider',
+        ),
+        Provider::COMPONENT => array(
+            'class' => '\crisu83\yii_caviar\providers\ComponentProvider',
+        ),
+        Provider::CONTROLLER => array(
+            'class' => '\crisu83\yii_caviar\providers\ControllerProvider',
+        ),
+        Provider::CRUD => array(
+            'class' => '\crisu83\yii_caviar\providers\CrudProvider',
+        ),
+        Provider::MODEL => array(
+            'class' => '\crisu83\yii_caviar\providers\ModelProvider',
+        ),
+        Provider::VIEW => array(
+            'class' => '\crisu83\yii_caviar\providers\ViewProvider',
         ),
     );
 
@@ -186,7 +209,7 @@ class GenerateCommand extends Command
         }
 
         if (!isset($this->templates['default'])) {
-            $this->templates['default'] = dirname(__DIR__) . '/templates/default';
+            $this->templates['default'] = realpath(dirname(__DIR__) . '/../templates/default');
         }
     }
 
@@ -196,6 +219,7 @@ class GenerateCommand extends Command
     protected function initGenerators()
     {
         $this->generators = \CMap::mergeArray(self::$_builtInGenerators, $this->generators);
+        $this->providers = \CMap::mergeArray(self::$_builtInProviders, $this->providers);
 
         Generator::setConfig(
             \Yii::createComponent(
@@ -203,10 +227,10 @@ class GenerateCommand extends Command
                     'class' => '\crisu83\yii_caviar\components\Config',
                     'basePath' => $this->getTempPath(),
                     'generators' => $this->generators,
+                    'providers' => $this->providers,
                     'templates' => $this->templates,
                     'attributes' => array(
                         'template' => $this->defaultTemplate,
-                        'enableNamespaces' => $this->enableNamespaces,
                     ),
                 )
             )
