@@ -88,6 +88,9 @@ class GenerateCommand extends Command
     );
 
     private static $_builtInProviders = array(
+        Provider::ACTION => array(
+            'class' => '\crisu83\yii_caviar\providers\ActionProvider',
+        ),
         Provider::COMPONENT => array(
             'class' => '\crisu83\yii_caviar\providers\ComponentProvider',
         ),

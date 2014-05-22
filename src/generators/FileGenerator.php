@@ -189,11 +189,25 @@ abstract class FileGenerator extends Generator
      *
      * @param array $properties properties to pass to the providers.
      * @return string the compiled template.
-     * @throws Exception if the template file cannot be found.
      */
     protected function compile(array $properties = array())
     {
-        return $this->compileInternal($this->resolveTemplateFile(), $this->runProviders($properties));
+        return $this->compileInternal($this->resolveTemplateFile(), $this->providers, $properties);
+    }
+
+    /**
+     * Compiles a specific template file using a set of providers.
+     *
+     * @param string $templateFile path to the template file.
+     * @param array $providers a set of providers to run.
+     * @param array $properties properties to pass to the providers.
+     * @return string the compiled template.
+     */
+    protected function compileInternal($templateFile, array $providers = array(), array $properties = array())
+    {
+        $providers = array_merge($this->providers, $providers);
+        $templateData = !empty($providers) ? $this->runProviders($providers, $properties) : array();
+        return $this->compileTemplate($templateFile, $templateData);
     }
 
     /**
@@ -204,7 +218,7 @@ abstract class FileGenerator extends Generator
      * @return string the compiled template.
      * @throws Exception if the template file cannot be found.
      */
-    protected function compileInternal($templateFile, array $templateData)
+    protected function compileTemplate($templateFile, array $templateData)
     {
         if (!isset(self::$compiler)) {
             self::$compiler = new Compiler();

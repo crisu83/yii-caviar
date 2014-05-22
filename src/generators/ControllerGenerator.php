@@ -172,8 +172,11 @@ class ControllerGenerator extends ComponentGenerator
             $actions[] = $this->compileInternal(
                 $this->resolveTemplateFile(array("actions/$actionId.txt", "actions/action.txt")),
                 array(
-                    'methodName' => 'action' . ucfirst($actionId),
-                    'viewName' => $actionId,
+                    array(
+                        Provider::ACTION,
+                        'id' => $actionId,
+                        'view' => $actionId,
+                    ),
                 )
             );
         }

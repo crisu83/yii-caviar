@@ -13,6 +13,7 @@ namespace crisu83\yii_caviar\providers;
 abstract class Provider extends \CComponent
 {
     // Constants for built in providers.
+    const ACTION = 'action';
     const COMPONENT = 'component';
     const CONTROLLER = 'controller';
     const CRUD = 'crud';
