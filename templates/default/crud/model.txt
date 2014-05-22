@@ -41,7 +41,7 @@ class $CLASSNAME$ extends $BASECLASS$
         return $RELATIONS$;
     }
 
-    /**
+    /**r
      * @return array customized attribute labels (name=>label).
      */
     public function attributeLabels()

@@ -63,6 +63,24 @@ class GenerateCommandTest extends Test
         $I->removeDir('_data/app');
     }
 
+    public function testGenerateCrud()
+    {
+        $I = $this->codeGuy;
+
+        $I->runCommand('generate crud --help');
+        $I->runCommand('generate crud -h');
+        $I->runCommand('generate crud actor');
+
+        $I->canSeeFiles(
+            array(
+                '_data/app/models/Actor.php',
+                '_data/app/controllers/ActorController.php',
+            )
+        );
+
+        $I->removeDir('_data/app');
+    }
+
     public function testGenerateLayout()
     {
         $I = $this->codeGuy;
