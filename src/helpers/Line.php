@@ -10,6 +10,8 @@
 
 namespace crisu83\yii_caviar\helpers;
 
+use crisu83\yii_caviar\Exception;
+
 class Line
 {
     const RED = 'red';

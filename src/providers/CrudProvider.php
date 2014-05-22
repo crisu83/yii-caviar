@@ -22,6 +22,9 @@ class CrudProvider extends ControllerProvider
      */
     public $modelNamespace;
 
+    /**
+     * @inheritDoc
+     */
     public function provide()
     {
         return array_merge(

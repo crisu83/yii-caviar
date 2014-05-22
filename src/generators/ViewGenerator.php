@@ -19,7 +19,7 @@ class ViewGenerator extends FileGenerator
      * @var array
      */
     public $providers = array(
-        array(Provider::VIEW),
+        Provider::VIEW,
     );
 
     /**
@@ -67,7 +67,7 @@ class ViewGenerator extends FileGenerator
 
         $files[] = new File(
             $this->resolveFilePath(),
-            $this->compile($this->templateData)
+            $this->compile()
         );
 
         return $files;

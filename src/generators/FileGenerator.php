@@ -104,16 +104,21 @@ abstract class FileGenerator extends Generator
     }
 
     /**
-     * Runs the providers for this generator.
+     * Runs a set of providers for this generator.
      *
+     * @param array $providers provider configurations.
      * @param array $properties an array of properties to set for providers.
      * @return array an array with the provided data.
      */
-    protected function runProviders(array $properties = array())
+    protected function runProviders(array $providers, array $properties = array())
     {
         $data = array();
 
-        foreach ($this->providers as $config) {
+        foreach ($providers as $config) {
+            if (is_string($config)) {
+                $config = array($config);
+            }
+
             $className = array_shift($config);
 
             if (isset(self::$config->providers[$className])) {

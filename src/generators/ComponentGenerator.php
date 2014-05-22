@@ -34,7 +34,7 @@ class ComponentGenerator extends FileGenerator
     * @var array providers to use with this generator.
     */
     public $providers = array(
-        array(Provider::COMPONENT),
+        Provider::COMPONENT,
     );
 
     /**

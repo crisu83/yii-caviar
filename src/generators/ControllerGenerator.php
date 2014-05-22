@@ -34,7 +34,7 @@ class ControllerGenerator extends ComponentGenerator
      * @var string
      */
     public $providers = array(
-        array(Provider::CONTROLLER),
+        Provider::CONTROLLER,
     );
 
     /**

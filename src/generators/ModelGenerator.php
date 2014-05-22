@@ -55,7 +55,7 @@ class ModelGenerator extends ComponentGenerator
      * @var array
      */
     public $providers = array(
-        array(Provider::MODEL),
+        Provider::MODEL,
     );
 
     /**
