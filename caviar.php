@@ -7,10 +7,8 @@ defined('YII_DEBUG') or define('YII_DEBUG', true);
 
 defined('STDIN') or define('STDIN', fopen('php://stdin', 'r'));
 
-$tests = __DIR__ . '/tests';
-$vendor = __DIR__ . '/vendor';
+$vendor = dirname(__DIR__);
 
-require("$vendor/autoload.php");
 require("$vendor/yiisoft/yii/framework/yii.php");
 
 $basePath = realpath(dirname(__DIR__) . '/..');
