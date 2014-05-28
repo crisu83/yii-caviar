@@ -8,5 +8,5 @@ $_SERVER['SCRIPT_FILENAME'] = __FILE__;
 
 $vendor = dirname(__DIR__) . '/vendor';
 
-require($vendor . '/autoload.php');
-require($vendor . '/yiisoft/yii/framework/yii.php');
+require("$vendor/autoload.php");
+require("$vendor/yiisoft/yii/framework/yii.php");
