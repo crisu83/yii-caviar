@@ -18,17 +18,7 @@ class ControllerGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $baseClass;
-
-    /**
-     * @var string
-     */
     public $namespace = 'controllers';
-
-    /**
-     * @var string
-     */
-    public $filePath = 'controllers';
 
     /**
      * @var string
@@ -61,6 +51,11 @@ class ControllerGenerator extends ComponentGenerator
      * @var string
      */
     protected $coreClass = '\CController';
+
+    /**
+     * @var string
+     */
+    protected $filePath = 'controllers';
 
     /**
      * @inheritDoc
@@ -173,7 +168,7 @@ class ControllerGenerator extends ComponentGenerator
                 $this->resolveTemplateFile(array("actions/$actionId.txt", "actions/action.txt")),
                 array(
                     array(
-                        Provider::ACTION,
+                        Provider::INLINE_ACTION,
                         'id' => $actionId,
                         'view' => $actionId,
                     ),

@@ -1,0 +1,6 @@
+<?php
+$DOCVARS$
+?>
+<div class="$CSSCLASS$">
+
+</div>

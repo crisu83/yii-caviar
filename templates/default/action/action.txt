@@ -1,0 +1,13 @@
+<?php
+$NAMESPACE$
+$USE$
+class $CLASSNAME$ extends $BASECLASS$
+{
+    /**
+     * Runs this action.
+     */
+    public function run()
+    {
+
+    }
+}

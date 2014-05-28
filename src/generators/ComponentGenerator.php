@@ -26,11 +26,6 @@ class ComponentGenerator extends FileGenerator
     public $namespace = 'components';
 
     /**
-     * @var string
-     */
-    public $filePath = 'components';
-
-    /**
     * @var array providers to use with this generator.
     */
     public $providers = array(
@@ -61,6 +56,11 @@ class ComponentGenerator extends FileGenerator
      * @var string
      */
     protected $defaultTemplate = 'component.txt';
+
+    /**
+     * @var string
+     */
+    protected $filePath = 'components';
 
     /**
      * @inheritDoc

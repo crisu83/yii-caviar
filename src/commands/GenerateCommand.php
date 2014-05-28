@@ -61,6 +61,9 @@ class GenerateCommand extends Command
      * @var array list of built in generators.
      */
     private static $_builtInGenerators = array(
+        Generator::ACTION => array(
+            'class' => '\crisu83\yii_caviar\generators\ActionGenerator',
+        ),
         Generator::COMPONENT => array(
             'class' => '\crisu83\yii_caviar\generators\ComponentGenerator',
         ),
@@ -99,6 +102,9 @@ class GenerateCommand extends Command
         ),
         Provider::CRUD => array(
             'class' => '\crisu83\yii_caviar\providers\CrudProvider',
+        ),
+        Provider::INLINE_ACTION => array(
+            'class' => '\crisu83\yii_caviar\providers\InlineActionProvider',
         ),
         Provider::MODEL => array(
             'class' => '\crisu83\yii_caviar\providers\ModelProvider',

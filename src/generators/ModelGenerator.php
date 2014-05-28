@@ -29,11 +29,6 @@ class ModelGenerator extends ComponentGenerator
     /**
      * @var string
      */
-    public $filePath = 'models';
-
-    /**
-     * @var string
-     */
     public $connectionId = 'db';
 
     /**
@@ -77,6 +72,11 @@ class ModelGenerator extends ComponentGenerator
      * @var string
      */
     protected $coreClass = '\CActiveRecord';
+
+    /**
+     * @var string
+     */
+    protected $filePath = 'models';
 
     /**
      * @var string
@@ -185,6 +185,10 @@ class ModelGenerator extends ComponentGenerator
                 'Model class cannot take a reserved PHP keyword! Table name: ' . implode(', ', $invalidTables) . "."
             );
         }
+
+        // todo: enable this once the spaces in column names are converted into underscores.
+
+        /*
         if ($invalidColumns != array()) {
             $this->addError(
                 'tableName',
@@ -194,6 +198,7 @@ class ModelGenerator extends ComponentGenerator
                 ) . "."
             );
         }
+        */
     }
 
     /**

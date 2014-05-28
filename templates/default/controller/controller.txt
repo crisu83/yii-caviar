@@ -1,9 +1,6 @@
 <?php
-
 $NAMESPACE$
-
 $USE$
-
 class $CLASSNAME$ extends $BASECLASS$
 {
     $ACTIONS$

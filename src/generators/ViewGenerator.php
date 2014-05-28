@@ -38,6 +38,11 @@ class ViewGenerator extends FileGenerator
     protected $defaultTemplate = 'view.txt';
 
     /**
+     * @var string
+     */
+    protected $filePath = 'views';
+
+    /**
      * @inheritDoc
      */
     public function init()

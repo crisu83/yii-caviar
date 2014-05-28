@@ -21,5 +21,8 @@
         "psr-4": {
             "crisu83\\yii_caviar\\": "./src"
         }
-    }
+    },
+    "bin": [
+        "caviar"
+    ]
 }

@@ -1,9 +1,6 @@
 <?php
-
 $NAMESPACE$
-
 $USE$
-
 /**
  * This is the model class for table $TABLENAME$".
  *

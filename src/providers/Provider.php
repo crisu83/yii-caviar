@@ -17,6 +17,7 @@ abstract class Provider extends \CComponent
     const COMPONENT = 'component';
     const CONTROLLER = 'controller';
     const CRUD = 'crud';
+    const INLINE_ACTION = 'inlineAction';
     const MODEL = 'model';
     const VIEW = 'view';
 

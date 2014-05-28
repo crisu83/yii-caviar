@@ -42,7 +42,7 @@ class ComponentProvider extends FileProvider
         return array(
             'className' => $this->className,
             'baseClass' => $this->baseClass,
-            'namespace' => !empty($this->namespace) ? "namespace {$this->namespace};" : '',
+            'namespace' => !empty($this->namespace) ? "\nnamespace {$this->namespace};" : '',
             'use' => $this->renderUse(),
         );
     }
@@ -60,6 +60,6 @@ class ComponentProvider extends FileProvider
             $use[] = isset($alias) ? "$className as $alias" : $className;
         }
 
-        return !empty($use) ? 'use ' . implode(";\nuse ", $use) . ';' : '';
+        return !empty($use) ? "\nuse " . implode(";\nuse ", $use) . ";\n" : '';
     }
 }
