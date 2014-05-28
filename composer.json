@@ -23,6 +23,6 @@
         }
     },
     "bin": [
-        "caviar"
+        "./caviar"
     ]
 }
