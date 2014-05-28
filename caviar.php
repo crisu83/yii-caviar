@@ -9,6 +9,7 @@ defined('STDIN') or define('STDIN', fopen('php://stdin', 'r'));
 
 $vendor = realpath(dirname(__DIR__) . '/..');
 
+require("$vendor/autoload.php");
 require("$vendor/yiisoft/yii/framework/yii.php");
 
 $basePath = realpath($vendor . '/..');
