@@ -7,11 +7,11 @@ defined('YII_DEBUG') or define('YII_DEBUG', true);
 
 defined('STDIN') or define('STDIN', fopen('php://stdin', 'r'));
 
-$vendor = dirname(__DIR__);
+$vendor = realpath(dirname(__DIR__) . '/..');
 
 require("$vendor/yiisoft/yii/framework/yii.php");
 
-$basePath = realpath(dirname(__DIR__) . '/..');
+$basePath = realpath($vendor . '/..');
 
 $config = array(
     'basePath' => $basePath,
